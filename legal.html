@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APEX — Legal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- Inline SVGs only — no external icon CDN -->
+  <style>
+    :root {
+      --bg:             #0a0a0a;
+      --surface:        #111111;
+      --border:         #1e1e1e;
+      --accent:         #c8a96e;
+      --text-primary:   #f0f0f0;
+      --text-secondary: #666666;
+      --text-muted:     #333333;
+      --radius:         4px;
+      --font:           'Inter', sans-serif;
+      --font-display:   'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+
+    .logo-mark {
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 17px; font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.18em;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .nav-link {
+      font-size: 12px; color: var(--text-muted);
+      text-decoration: none; letter-spacing: 0.04em;
+      transition: color 200ms ease;
+    }
+    .nav-link:hover { color: var(--text-secondary); }
+
+    /* HERO BAR */
+    .legal-hero {
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .legal-eyebrow {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px;
+    }
+
+    .legal-title {
+      font-family: var(--font-display);
+      font-size: 36px; font-weight: 600;
+      color: var(--text-primary); line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .legal-subtitle {
+      font-size: 14px; font-weight: 300;
+      color: var(--text-secondary);
+      max-width: 560px; line-height: 1.65;
+    }
+
+    .legal-meta {
+      margin-top: 20px;
+      font-size: 11px; color: var(--text-muted);
+      display: flex; gap: 24px;
+    }
+
+    /* LAYOUT */
+    .legal-layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      padding: 0 40px;
+    }
+
+    /* STICKY NAV SIDEBAR */
+    .legal-nav {
+      position: sticky;
+      top: 80px;
+      padding: 40px 0;
+      align-self: start;
+      border-right: 1px solid var(--border);
+      padding-right: 32px;
+    }
+
+    .legal-nav-label {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.10em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 12px;
+    }
+
+    .legal-nav a {
+      display: block;
+      font-size: 12px; color: var(--text-muted);
+      text-decoration: none; padding: 6px 0;
+      border-left: 2px solid transparent;
+      padding-left: 12px; margin-left: -14px;
+      transition: color 200ms ease, border-color 200ms ease;
+      font-weight: 400;
+    }
+
+    .legal-nav a:hover { color: var(--text-secondary); }
+    .legal-nav a.active { color: var(--accent); border-left-color: var(--accent); }
+
+    /* CONTENT */
+    .legal-content {
+      padding: 40px 0 80px 48px;
+      max-width: 760px;
+    }
+
+    .legal-section {
+      margin-bottom: 64px;
+      scroll-margin-top: 80px;
+    }
+
+    .legal-section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); flex-shrink: 0;
+    }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* Warning box for disclaimer */
+    .warning-box {
+      background: rgba(200,169,110,0.05);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .warning-box strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    h3 {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-top: 28px;
+      margin-bottom: 10px;
+      letter-spacing: 0.02em;
+    }
+
+    .legal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .legal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .legal-list li::before {
+      content: '—';
+      color: var(--text-muted);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Data table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 12px;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 8px 14px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 10px 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-disclaimer {
+      font-size: 11px; font-weight: 300;
+      color: var(--text-muted); max-width: 500px; line-height: 1.5;
+    }
+
+    .footer-links {
+      display: flex; align-items: center; gap: 20px;
+    }
+
+    .footer-links a {
+      font-size: 12px; color: var(--text-muted);
+      text-decoration: none; transition: color 200ms ease;
+    }
+    .footer-links a:hover { color: var(--text-secondary); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    @media (max-width: 768px) {
+      .legal-layout { grid-template-columns: 1fr; padding: 0 20px; }
+      .legal-nav { display: none; }
+      .legal-content { padding: 32px 0 60px; }
+      nav, footer { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-mark">
+      <svg width="11" height="9" viewBox="0 0 12 10" fill="var(--accent)"><path d="M6 0L12 10H0Z"/></svg>
+    </div>
+    <span class="logo-text">APEX</span>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="dashboard.html" class="nav-link">Dashboard</a>
+    <a href="auth.html" class="nav-link">Sign In</a>
+  </div>
+</nav>
+
+<div class="legal-hero">
+  <div class="legal-eyebrow">Legal Information</div>
+  <h1 class="legal-title">Terms, Disclaimer & Privacy</h1>
+  <p class="legal-subtitle">
+    Please read this document carefully. By using APEX, you acknowledge and agree to these terms. APEX is a data and analytics tool — not financial advice.
+  </p>
+  <div class="legal-meta">
+    <span>Effective: April 2026</span>
+    <span>Version: 1.0</span>
+    <span>Jurisdiction: Republic of India</span>
+  </div>
+</div>
+
+<div class="legal-layout">
+
+  <!-- Sticky nav -->
+  <aside class="legal-nav">
+    <div class="legal-nav-label">On this page</div>
+    <a href="#disclaimer" class="active">Disclaimer</a>
+    <a href="#terms">Terms of Service</a>
+    <a href="#privacy">Privacy Policy</a>
+    <a href="#refund">Refund Policy</a>
+    <a href="#contact">Contact</a>
+  </aside>
+
+  <!-- Content -->
+  <div class="legal-content">
+
+    <!-- ── DISCLAIMER ── -->
+    <section class="legal-section" id="disclaimer">
+      <div class="legal-section-header">
+        <div class="section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m10.29 3.86-8.27 14.3A1 1 0 0 0 2.89 20h18.22a1 1 0 0 0 .87-1.5L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h2 class="section-heading">Financial Disclaimer</h2>
+      </div>
+
+      <div class="warning-box">
+        <strong>IMPORTANT — READ CAREFULLY:</strong> APEX is not a financial advisor, investment advisor, broker, or dealer. Nothing on this platform constitutes financial advice, investment advice, trading advice, or any other form of advice. All signals, scores, confidence levels, regime labels, backtests, and analysis outputs are algorithmically generated and are provided for <strong>informational and educational purposes only</strong>.
+      </div>
+
+      <p>
+        APEX is a quantitative data visualization and analysis platform. It provides technical indicators, machine learning signal outputs, and risk parameter calculations based on historical market data. These outputs do not constitute recommendations to buy, sell, or hold any financial instrument.
+      </p>
+
+      <h3>No Guarantee of Accuracy or Profitability</h3>
+      <p>
+        Market data displayed on APEX is sourced from third-party providers (Yahoo Finance, CoinGecko, TradingView) and is provided on an "as-is" basis. APEX makes no representation or warranty, express or implied, as to the accuracy, completeness, timeliness, or reliability of any data, signal, or analysis output. Errors, delays, or inaccuracies in market data may occur.
+      </p>
+      <p>
+        Past performance shown in backtests and historical analyses is <strong>not indicative of future results</strong>. Simulated or hypothetical performance results have inherent limitations. Backtests are prepared with the benefit of hindsight and do not account for slippage, liquidity constraints, brokerage fees, taxes, or real-world execution factors.
+      </p>
+
+      <h3>Investment Risk</h3>
+      <p>
+        Trading and investing in financial instruments — including equities, derivatives, cryptocurrencies, commodities, and foreign exchange — involves substantial risk of loss. You may lose some or all of your invested capital. Do not invest money you cannot afford to lose. Financial markets are unpredictable and can be affected by numerous factors including macroeconomic events, geopolitical developments, regulatory changes, and market sentiment.
+      </p>
+
+      <h3>Consult a Professional</h3>
+      <p>
+        Before making any investment or trading decision, you should consult a SEBI-registered investment adviser or a qualified financial professional who can assess your individual financial situation, risk tolerance, and investment objectives. APEX is a tool to assist your own research — it does not replace professional financial guidance.
+      </p>
+
+      <h3>Limitation of Liability</h3>
+      <p>
+        APEX, its founders, developers, employees, and affiliates accept no liability for any losses, damages, costs, or expenses (including loss of profits, loss of opportunity, or consequential losses) arising from or related to your use of this platform, reliance on any information, signal, or analysis output provided by APEX, or any interruption, error, or failure of the platform.
+      </p>
+    </section>
+
+    <!-- ── TERMS OF SERVICE ── -->
+    <section class="legal-section" id="terms">
+      <div class="legal-section-header">
+        <div class="section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+        </div>
+        <h2 class="section-heading">Terms of Service</h2>
+      </div>
+
+      <h3>Eligibility</h3>
+      <p>
+        You must be at least 18 years of age to create an account and use APEX. By registering, you represent and warrant that you meet this age requirement and that all information you provide is accurate and truthful.
+      </p>
+
+      <h3>Account Responsibilities</h3>
+      <ul class="legal-list">
+        <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+        <li>You must notify APEX immediately of any unauthorized use of your account.</li>
+        <li>You may not share your account with or transfer it to any other person.</li>
+        <li>APEX reserves the right to suspend or terminate accounts that violate these terms.</li>
+      </ul>
+
+      <h3>Subscription and Billing</h3>
+      <p>
+        The Premium tier is priced at <strong>₹50 per week</strong>, billed on an auto-renewing weekly cycle via Razorpay Subscriptions. By subscribing, you authorize APEX to charge your payment method on a weekly basis until you cancel.
+      </p>
+      <ul class="legal-list">
+        <li>Subscriptions auto-renew at the start of each billing week unless cancelled.</li>
+        <li>You may cancel at any time. Upon cancellation, your Premium access continues until the end of the current paid week.</li>
+        <li>No refunds are issued for partial weeks or unused time within a billing period.</li>
+        <li>APEX reserves the right to modify subscription pricing with at least 14 days advance notice to registered users.</li>
+      </ul>
+
+      <h3>Acceptable Use</h3>
+      <ul class="legal-list">
+        <li>APEX is a read-only analytics platform. It does not execute trades, place orders, or access any brokerage account.</li>
+        <li>You may not attempt to reverse engineer, scrape, copy, or redistribute any APEX proprietary algorithm, indicator formula, or platform component.</li>
+        <li>You may not use APEX to engage in market manipulation, fraudulent activity, or any unlawful purpose.</li>
+        <li>Automated access to the APEX platform (beyond your personal account's stated API limits) is prohibited.</li>
+        <li>You may not resell, sublicense, or commercialize access to APEX or its outputs.</li>
+      </ul>
+
+      <h3>API Rate Limits</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Daily Analysis Calls</th>
+            <th>Reset</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Free</td>
+            <td>50 calls per day</td>
+            <td>Midnight IST</td>
+          </tr>
+          <tr>
+            <td>Premium</td>
+            <td>500 calls per day</td>
+            <td>Midnight IST</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Exceeding your daily rate limit will return a <code style="font-family:monospace;font-size:12px;color:var(--accent);">429 Too Many Requests</code> response with the exact reset timestamp. Rate limits are enforced per authenticated user and per IP address.
+      </p>
+
+      <h3>Service Availability</h3>
+      <p>
+        APEX is provided on an "as available" basis. We do not guarantee uninterrupted access. We reserve the right to modify, suspend, or discontinue the service or any feature thereof with at least 7 days' notice to registered users, except in cases of emergency maintenance or security incidents.
+      </p>
+
+      <h3>Intellectual Property</h3>
+      <p>
+        All content, algorithms, designs, and code on the APEX platform are the property of APEX and its licensors. Your account grants you a limited, non-exclusive, non-transferable license to use the platform for personal, non-commercial purposes only.
+      </p>
+
+      <h3>Governing Law</h3>
+      <p>
+        These Terms are governed by the laws of the Republic of India. Any disputes arising from these Terms or your use of APEX shall be subject to the exclusive jurisdiction of the courts in India.
+      </p>
+    </section>
+
+    <!-- ── PRIVACY POLICY ── -->
+    <section class="legal-section" id="privacy">
+      <div class="legal-section-header">
+        <div class="section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h2 class="section-heading">Privacy Policy</h2>
+      </div>
+
+      <p>
+        APEX is designed with a minimal data footprint. We collect only what is strictly necessary to provide the service. We do not sell, rent, or share your personal data with any third party for advertising or commercial purposes.
+      </p>
+
+      <h3>Data We Collect</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Purpose</th>
+            <th>Retention</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Email address</td>
+            <td>Account authentication and service communications</td>
+            <td>Until account deletion</td>
+          </tr>
+          <tr>
+            <td>Subscription status</td>
+            <td>Gating Premium features</td>
+            <td>Until account deletion</td>
+          </tr>
+          <tr>
+            <td>Razorpay payment confirmation ID</td>
+            <td>Payment verification and receipt records</td>
+            <td>7 years (legal requirement)</td>
+          </tr>
+          <tr>
+            <td>API call count (today's date only)</td>
+            <td>Rate limit enforcement</td>
+            <td>Reset daily</td>
+          </tr>
+          <tr>
+            <td>Custom indicator formulas (Premium)</td>
+            <td>Personal indicator studio</td>
+            <td>Until deleted by user</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>What We Do NOT Collect</h3>
+      <ul class="legal-list">
+        <li>Card numbers, CVV, or any payment instrument details (handled entirely by Razorpay).</li>
+        <li>Your brokerage account details or trading history.</li>
+        <li>Your precise location or device fingerprints.</li>
+        <li>Any data from instruments you browse or charts you view.</li>
+      </ul>
+
+      <h3>Third-Party Services</h3>
+      <ul class="legal-list">
+        <li><strong style="color:var(--text-primary);font-weight:400;">Supabase</strong> — authentication and database (Singapore region). Data is encrypted at rest and in transit.</li>
+        <li><strong style="color:var(--text-primary);font-weight:400;">Razorpay</strong> — payment processing. All card data is handled directly by Razorpay and never passes through APEX servers.</li>
+        <li><strong style="color:var(--text-primary);font-weight:400;">TradingView</strong> — chart rendering widget embedded on the dashboard.</li>
+        <li><strong style="color:var(--text-primary);font-weight:400;">Yahoo Finance / CoinGecko</strong> — market data APIs. No user data is sent to these services.</li>
+      </ul>
+
+      <h3>Data Storage and Security</h3>
+      <p>
+        User data is stored in Supabase (Singapore region). We implement Row Level Security (RLS) policies ensuring each user can only access their own data. All API endpoints are authenticated with JWT tokens stored in httpOnly, Secure, SameSite=Strict cookies. We do not use localStorage for any sensitive data.
+      </p>
+
+      <h3>Your Rights</h3>
+      <ul class="legal-list">
+        <li>You may request a copy of all data APEX holds about you by emailing us.</li>
+        <li>You may request complete deletion of your account and all associated data at any time.</li>
+        <li>Data deletion requests will be processed within 30 days.</li>
+      </ul>
+
+      <h3>Cookies</h3>
+      <p>
+        APEX uses a single authentication cookie (<code style="font-family:monospace;font-size:12px;color:var(--accent);">apex_session</code>) which is httpOnly, Secure, and SameSite=Strict. We do not use tracking cookies, advertising cookies, or any cookie beyond what is strictly required for session authentication.
+      </p>
+    </section>
+
+    <!-- ── REFUND POLICY ── -->
+    <section class="legal-section" id="refund">
+      <div class="legal-section-header">
+        <div class="section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <h2 class="section-heading">Refund Policy</h2>
+      </div>
+
+      <div class="warning-box">
+        Due to the nature of digital subscription services, <strong>APEX does not offer refunds for partial billing periods.</strong>
+      </div>
+
+      <ul class="legal-list">
+        <li>You may cancel your Premium subscription at any time. Cancellation takes effect at the end of the current billing week.</li>
+        <li>No refund is issued for the remaining days in a paid billing week after cancellation.</li>
+        <li>In the event of a proven billing error (duplicate charge, charge after cancellation), APEX will process a full refund within 7 business days.</li>
+        <li>To report a billing error, contact us at the email below with your Razorpay payment ID.</li>
+      </ul>
+    </section>
+
+    <!-- ── CONTACT ── -->
+    <section class="legal-section" id="contact">
+      <div class="legal-section-header">
+        <div class="section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <h2 class="section-heading">Contact</h2>
+      </div>
+
+      <p>
+        For all legal, privacy, and billing enquiries, please contact us at:
+      </p>
+
+      <div style="display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);margin-top:8px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <span style="font-family:monospace;font-size:13px;color:var(--text-secondary);">legal@apextrading.in</span>
+      </div>
+
+      <p style="margin-top:20px;">
+        We aim to respond to all legal and privacy requests within 5 business days. For account deletion requests, please include your registered email address in the subject line.
+      </p>
+    </section>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-disclaimer">
+    APEX is not a financial advisor. Nothing on this platform is financial advice. All signals are algorithmic and for informational purposes only. © 2026 APEX. All rights reserved.
+  </p>
+  <div class="footer-links">
+    <a href="#disclaimer">Disclaimer</a>
+    <a href="#terms">Terms</a>
+    <a href="#privacy">Privacy</a>
+    <a href="index.html">Home</a>
+  </div>
+</footer>
+
+<script>
+  // icons are inline SVG — no external library needed
+
+  // Highlight nav links on scroll
+  const sections = document.querySelectorAll('.legal-section');
+  const navLinks = document.querySelectorAll('.legal-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const id = entry.target.id;
+        const link = document.querySelector(`.legal-nav a[href="#${id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

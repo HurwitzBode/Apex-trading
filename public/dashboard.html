@@ -1,0 +1,3153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APEX — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- No external icon CDN — all icons are inline SVG for reliability and performance -->
+  <style>
+    :root {
+      --bg:             #0a0a0a;
+      --surface:        #111111;
+      --surface-2:      #161616;
+      --border:         #1e1e1e;
+      --border-light:   #252525;
+      --accent:         #c8a96e;
+      --accent-dim:     rgba(200, 169, 110, 0.10);
+      --accent-dim2:    rgba(200, 169, 110, 0.05);
+      --text-primary:   #f0f0f0;
+      --text-secondary: #666666;
+      --text-muted:     #333333;
+      --success:        #4a7c59;
+      --success-bg:     rgba(74,124,89,0.12);
+      --success-border: rgba(74,124,89,0.25);
+      --danger:         #7c4a4a;
+      --danger-bg:      rgba(124,74,74,0.12);
+      --danger-border:  rgba(124,74,74,0.25);
+      --radius:         4px;
+      --font:           'Inter', sans-serif;
+      --font-display:   'Syne', sans-serif;
+      --font-mono:      'JetBrains Mono', monospace;
+      --sidebar-w:      240px;
+      --topbar-h:       52px;
+      --infopanel-w:    300px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    /* ─────────── TOPBAR ─────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 200;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 26px;
+      height: 26px;
+      border: 1.5px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.18em;
+    }
+
+    .topbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .topbar-nav-btn {
+      padding: 5px 12px;
+      background: transparent;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: color 200ms ease;
+      text-decoration: none;
+    }
+
+    .topbar-nav-btn:hover { color: var(--text-secondary); }
+    .topbar-nav-btn.active { color: var(--text-primary); background: var(--surface); }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rate-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .rate-bar {
+      width: 48px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .rate-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color 200ms ease;
+      background: transparent;
+    }
+
+    .user-chip:hover { border-color: var(--border-light); }
+
+    .user-avatar {
+      width: 20px;
+      height: 20px;
+      border-radius: 2px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(200,169,110,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 500;
+      color: var(--accent);
+      font-family: var(--font-display);
+    }
+
+    .user-email-text {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-weight: 300;
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .plan-badge {
+      padding: 2px 7px;
+      border-radius: 2px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .plan-badge.pro {
+      border-color: rgba(200,169,110,0.3);
+      color: var(--accent);
+      background: var(--accent-dim2);
+    }
+
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 200ms ease, border-color 200ms ease;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover { color: var(--text-secondary); border-color: var(--border-light); }
+
+    /* ─────────── LAYOUT ─────────────────────────────── */
+    .app-layout {
+      display: flex;
+      height: 100vh;
+      padding-top: var(--topbar-h);
+      will-change: transform;
+    }
+
+    /* ─────────── SIDEBAR ────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      height: 100%;
+      background: var(--bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: width 400ms cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .sidebar.collapsed { width: 52px; }
+
+    /* Search */
+    .sidebar-search {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 9px;
+      width: 13px;
+      height: 13px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 7px 9px 7px 30px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 200ms ease;
+    }
+
+    .search-input:focus { border-color: rgba(200,169,110,0.3); }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    /* Navigation tree */
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 0 12px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar { width: 3px; }
+    .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* Category group */
+    .cat-group { }
+
+    .cat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .cat-header-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+    }
+
+    .cat-header-inner svg {
+      width: 13px;
+      height: 13px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .cat-name {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .cat-count {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-left: 2px;
+    }
+
+    .cat-chevron {
+      color: var(--text-muted);
+      width: 11px;
+      height: 11px;
+      transition: transform 200ms ease;
+      flex-shrink: 0;
+    }
+
+    .cat-group.open .cat-chevron { transform: rotate(180deg); }
+
+    .cat-body { display: none; }
+    .cat-group.open .cat-body { display: block; }
+
+    /* Subcategory */
+    .subcat {
+      margin-bottom: 1px;
+    }
+
+    .subcat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 12px 5px 28px;
+      cursor: pointer;
+      user-select: none;
+      transition: color 200ms ease;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .subcat-header:hover { color: var(--text-primary); }
+
+    .subcat-chevron {
+      width: 10px;
+      height: 10px;
+      color: var(--text-muted);
+      transition: transform 200ms ease;
+      flex-shrink: 0;
+    }
+
+    .subcat.open .subcat-chevron { transform: rotate(90deg); }
+    .subcat-items { display: none; }
+    .subcat.open .subcat-items { display: block; }
+
+    /* Instrument row */
+    .inst-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px 6px 36px;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background 150ms ease, border-color 150ms ease;
+      will-change: transform;
+    }
+
+    .inst-row:hover { background: var(--surface); }
+
+    .inst-row.active {
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+
+    .inst-row.active .inst-name { color: var(--accent); }
+
+    .inst-left { flex: 1; min-width: 0; }
+
+    .inst-name {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .inst-ticker {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      letter-spacing: 0.02em;
+      margin-top: 1px;
+    }
+
+    .inst-right {
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .inst-change {
+      font-size: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .inst-change.up { color: var(--success); }
+    .inst-change.down { color: var(--danger); }
+
+    .more-row {
+      padding: 4px 12px 4px 36px;
+      font-size: 10px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-style: italic;
+      transition: color 200ms ease;
+    }
+    .more-row:hover { color: var(--text-secondary); }
+
+    /* Sidebar footer */
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer-rate-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .footer-rate-bar {
+      width: 60px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .footer-rate-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      width: 24%; /* 12/50 used */
+    }
+
+    .footer-rate-text {
+      font-size: 9px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ─────────── CHART AREA ─────────────────────────── */
+    .chart-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .chart-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      height: 44px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* Indicator chips */
+    .indicator-chips {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chip {
+      padding: 4px 9px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      user-select: none;
+      transition: all 200ms ease;
+    }
+
+    .chip:hover {
+      border-color: var(--border-light);
+      color: var(--text-secondary);
+    }
+
+    .chip.active {
+      border-color: rgba(200,169,110,0.4);
+      color: var(--accent);
+      background: var(--accent-dim2);
+    }
+
+    .chip.locked {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .chip.locked:hover {
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Chart fit/center button */
+    .chart-fit-btn {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+    .chart-fit-btn:hover {
+      color: var(--accent);
+      border-color: rgba(200,169,110,0.35);
+      background: var(--accent-dim2);
+    }
+    .chart-fit-btn:active { transform: scale(0.9); }
+
+    /* Timeframe buttons */
+    .tf-group {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .tf-btn {
+      padding: 4px 7px;
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--border);
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all 200ms ease;
+    }
+
+    .tf-btn:last-child { border-right: none; }
+    .tf-btn:hover { color: var(--text-secondary); background: var(--surface); }
+
+    .tf-btn.active {
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+
+    /* Chart widget */
+    .chart-widget {
+      flex: 1;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    #tv_chart {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─────────── INFO PANEL ─────────────────────────── */
+    .info-panel {
+      width: var(--infopanel-w);
+      height: 100%;
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Instrument header */
+    .info-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .info-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .info-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+
+    .info-ticker-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-ticker {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .info-exchange-badge {
+      padding: 1px 5px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .info-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .info-price {
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .change-badge {
+      padding: 2px 7px;
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .change-badge.up {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+    }
+
+    .change-badge.down {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+    }
+
+    /* Info section label */
+    .info-section {
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-section-header {
+      padding: 10px 16px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* News */
+    .news-list {
+      padding: 0 16px 10px;
+    }
+
+    .news-item {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: opacity 200ms ease;
+    }
+
+    .news-item:hover { opacity: 0.72; }
+    .news-item:last-child { border-bottom: none; }
+
+    .news-headline {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 3px;
+    }
+
+    .news-meta {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* ─────────── AI ANALYSIS PANEL ──────────────────── */
+    .ai-section {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      position: relative;
+    }
+
+    .ai-section::-webkit-scrollbar { width: 3px; }
+    .ai-section::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .ai-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      min-height: 280px;
+    }
+
+    /* LOCKED OVERLAY */
+    .ai-locked-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,10,10,0.91);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 20;
+      border-radius: var(--radius);
+    }
+
+    .lock-circle {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .ai-locked-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    .ai-locked-sub {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .ai-locked-sub strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .unlock-btn {
+      padding: 8px 22px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--accent);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+
+    .unlock-btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* AI card content preview (shown blurred behind overlay) */
+    .ai-content {
+      padding: 14px;
+    }
+
+    .ai-signal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .signal-badge {
+      padding: 5px 14px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .signal-badge.buy {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+    }
+
+    .signal-badge.sell {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+    }
+
+    .signal-badge.hold {
+      background: rgba(102,102,102,0.1);
+      border: 1px solid rgba(102,102,102,0.2);
+      color: var(--text-secondary);
+    }
+
+    .conf-wrap {
+      text-align: right;
+    }
+
+    .conf-value {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    .conf-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .conf-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 8px 0;
+      overflow: hidden;
+    }
+
+    .conf-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .regime-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+    }
+
+    .regime-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .regime-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    .regime-value {
+      font-size: 11px;
+      color: var(--text-primary);
+      font-weight: 400;
+      margin-left: auto;
+    }
+
+    /* Risk metrics 2x2 */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+
+    .metric-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .metric-value.green { color: var(--success); }
+    .metric-value.red { color: var(--danger); }
+
+    /* Backtest mini chart canvas area */
+    .backtest-area {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--surface);
+    }
+
+    .backtest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .backtest-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .backtest-return {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--success);
+    }
+
+    .backtest-chart {
+      height: 50px;
+      width: 100%;
+      position: relative;
+    }
+
+    .backtest-chart svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─────────── SEARCH RESULTS ─────────────────────── */
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 300;
+      border-radius: 0 0 var(--radius) var(--radius);
+      display: none;
+    }
+
+    .search-results.visible { display: block; }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .search-result-item:hover { background: var(--surface-2); }
+
+    .sr-name { font-size: 12px; color: var(--text-primary); }
+    .sr-ticker { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
+    .sr-cat { font-size: 9px; color: var(--text-muted); border: 1px solid var(--border); padding: 1px 5px; border-radius: 2px; letter-spacing: 0.04em; }
+
+    /* ─────────── PAYMENT SLIDE-IN PANEL ─────────────── */
+    .payment-panel {
+      position: fixed;
+      top: 0; right: -400px; bottom: 0;
+      width: 400px;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 500;
+      transition: right 400ms cubic-bezier(0.16,1,0.3,1);
+      display: flex;
+      flex-direction: column;
+      padding: 32px;
+      will-change: transform;
+    }
+
+    .payment-panel.open { right: 0; }
+
+    .payment-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 490;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 400ms ease;
+    }
+
+    .payment-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .panel-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 200ms ease;
+    }
+    .panel-close:hover { color: var(--text-primary); }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .panel-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 300;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .plan-card-pay {
+      border: 1px solid rgba(200,169,110,0.3);
+      border-radius: var(--radius);
+      padding: 20px;
+      background: var(--accent-dim2);
+      margin-bottom: 24px;
+    }
+
+    .plan-card-pay-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .plan-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      color: var(--text-primary);
+    }
+
+    .plan-price-pay {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .plan-price-pay span {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: var(--font);
+    }
+
+    .plan-features-pay {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .plan-features-pay li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-secondary);
+    }
+
+    .plan-features-pay li svg {
+      width: 12px; height: 12px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .pay-btn {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: opacity 200ms ease;
+    }
+
+    .pay-btn:hover { opacity: 0.88; }
+
+    .pay-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .pay-note a { color: var(--text-secondary); text-decoration: none; }
+    .pay-note a:hover { color: var(--text-primary); }
+
+    /* ─────────── LIVE BADGE ─────────────────────────── */
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+    }
+    .live-badge.active { color: #4a7c59; border-color: rgba(74,124,89,0.3); }
+    .live-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .live-badge.active .live-dot {
+      background: #4a7c59;
+      animation: live-pulse 2s ease infinite;
+    }
+    @keyframes live-pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+    .live-ts { color: var(--text-muted); margin-left: 1px; }
+
+    /* ─────────── INR TOOLTIP (CSS-native, no JS events) ── */
+    /* Applied via data-inr attribute — set by JS whenever price changes */
+    .info-price-row { position: relative; }
+
+    #info-price[data-inr] { cursor: default; }
+
+    #info-price[data-inr]::after {
+      content: 'IN RUPEES · ' attr(data-inr);
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: var(--surface);
+      border: 1px solid rgba(200,169,110,0.30);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 400;
+      padding: 5px 11px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 140ms ease;
+    }
+    #info-price[data-inr]:hover::after { opacity: 1; }
+
+    /* Sidebar rows */
+    .inst-row[data-inr]::after {
+      content: attr(data-inr);
+      position: absolute;
+      right: 0; top: 100%;
+      background: var(--surface);
+      border: 1px solid rgba(200,169,110,0.25);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 140ms ease;
+    }
+    .inst-row[data-inr]:hover::after { opacity: 1; }
+
+    /* ─────────── SIDEBAR PRICE DISPLAY ─────────────── */
+    .inst-price-disp {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-secondary);
+      text-align: right;
+      margin-bottom: 1px;
+    }
+
+    /* ─────────── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 1100px) {
+      :root { --infopanel-w: 260px; --sidebar-w: 200px; }
+    }
+
+    @media (max-width: 900px) {
+      .info-panel { display: none; }
+      :root { --sidebar-w: 56px; }
+      .sidebar .cat-name,
+      .sidebar .cat-count,
+      .sidebar .cat-chevron,
+      .sidebar .sidebar-search,
+      .sidebar .cat-body,
+      .sidebar .sidebar-footer-label,
+      .sidebar .footer-rate-wrap { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───── TOPBAR ───── -->
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-mark">
+        <svg width="11" height="9" viewBox="0 0 12 10" fill="var(--accent)"><path d="M6 0L12 10H0Z"/></svg>
+      </div>
+      <span class="logo-text">APEX</span>
+    </a>
+    <div class="topbar-nav">
+      <a href="dashboard.html" class="topbar-nav-btn active">Dashboard</a>
+      <a href="premium.html" class="topbar-nav-btn" id="premium-nav-btn">Indicator Studio</a>
+      <a href="legal.html" class="topbar-nav-btn">Legal</a>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="live-badge" id="live-badge">
+      <span class="live-dot"></span>
+      LIVE
+      <span class="live-ts" id="live-ts">--:--:--</span>
+    </div>
+
+    <div class="rate-pill">
+      <span style="font-size:10px;">12 / 50 calls</span>
+      <div class="rate-bar"><div class="rate-fill" style="width:24%"></div></div>
+    </div>
+
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">A</div>
+      <span class="user-email-text" id="user-email">user@example.com</span>
+      <span class="plan-badge" id="plan-badge">Free</span>
+    </div>
+
+    <button onclick="signOut()" class="icon-btn" title="Sign out" style="background:none;border:none;cursor:pointer;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ───── LAYOUT ───── -->
+<div class="app-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-search" style="position:relative;">
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" class="search-input" id="sidebar-search"
+          placeholder="Search instruments…"
+          autocomplete="off"
+          oninput="handleSearch(this.value)">
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- Rendered by JS -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-label">
+        Daily calls<br>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">12 of 50</span>
+      </div>
+      <div class="footer-rate-wrap">
+        <div class="footer-rate-bar">
+          <div class="footer-rate-fill"></div>
+        </div>
+        <div class="footer-rate-text">76% left</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── CHART AREA ── -->
+  <main class="chart-area">
+    <div class="chart-topbar">
+      <div class="indicator-chips">
+        <div class="chip active" onclick="toggleChip(this)">EMA</div>
+        <div class="chip" onclick="toggleChip(this)">RSI</div>
+        <div class="chip" onclick="toggleChip(this)">MACD</div>
+        <div class="chip" onclick="toggleChip(this)">BB</div>
+        <div class="chip" onclick="toggleChip(this)">ATR</div>
+        <div class="chip" onclick="toggleChip(this)">Volume</div>
+        <div class="chip locked" onclick="showCustomLocked()" title="Premium — Custom Indicator Studio">+ Custom</div>
+      </div>
+      <div class="tf-group">
+        <button class="tf-btn" onclick="setTF(this,'1m')">1m</button>
+        <button class="tf-btn" onclick="setTF(this,'5m')">5m</button>
+        <button class="tf-btn" onclick="setTF(this,'15m')">15m</button>
+        <button class="tf-btn" onclick="setTF(this,'30m')">30m</button>
+        <button class="tf-btn" onclick="setTF(this,'60')">1H</button>
+        <button class="tf-btn active" onclick="setTF(this,'D')">1D</button>
+        <button class="tf-btn" onclick="setTF(this,'W')">1W</button>
+        <button class="tf-btn" onclick="setTF(this,'M')">1Mo</button>
+        <button class="tf-btn" onclick="setTF(this,'3M')">3M</button>
+        <button class="tf-btn" onclick="setTF(this,'6M')">6M</button>
+        <button class="tf-btn" onclick="setTF(this,'12M')">1Y</button>
+        <button class="tf-btn" onclick="setTF(this,'2Y')">2Y</button>
+        <button class="tf-btn" onclick="setTF(this,'5Y')">5Y</button>
+        <button class="tf-btn" onclick="setTF(this,'ALL')">Max</button>
+      </div>
+      <button class="chart-fit-btn" onclick="resetChartView()" title="Fit chart to view">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+
+    <div class="chart-widget">
+      <div id="tv_chart"></div>
+    </div>
+  </main>
+
+  <!-- ── INFO PANEL ── -->
+  <aside class="info-panel">
+    <!-- Header -->
+    <div class="info-header">
+      <div class="info-top-row">
+        <div>
+          <div class="info-name" id="info-name">Reliance Industries</div>
+          <div class="info-ticker-row">
+            <span class="info-ticker" id="info-ticker">NSE:RELIANCE</span>
+            <span class="info-exchange-badge" id="info-exchange">NSE</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-price-row">
+        <span class="info-price" id="info-price">₹2,847.30</span>
+        <span class="change-badge up" id="info-change">▲ +1.24%</span>
+      </div>
+    </div>
+
+    <!-- News -->
+    <div class="info-section">
+      <div class="info-section-header">
+        <span class="section-label">Latest News</span>
+        <svg onclick="refreshNews()" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="color:var(--text-muted);cursor:pointer;"><polyline points="23,4 23,11 16,11"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 11"/></svg>
+      </div>
+      <div class="news-list" id="news-list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- AI Analysis section -->
+    <div class="ai-section">
+      <div class="section-label" style="margin-bottom:10px;">AI Analysis</div>
+      <div class="ai-card" id="ai-card">
+
+        <!-- ── LOCKED STATE (shown to free users) ── -->
+        <div class="ai-locked-overlay" id="ai-locked">
+          <div class="lock-circle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="ai-locked-title">AI Analysis</div>
+          <div class="ai-locked-sub">
+            Premium feature<br>
+            <strong>₹50 / week</strong> · Cancel anytime
+          </div>
+          <button class="unlock-btn" onclick="openPaymentPanel()">
+            Unlock Premium →
+          </button>
+        </div>
+
+        <!-- ── AI ANALYSIS CONTENT (shown to pro users) ── -->
+        <div class="ai-content" id="ai-content">
+          <!-- idle state -->
+          <div id="ai-idle" style="text-align:center;padding:32px 16px;">
+            <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;">AI Analysis</div>
+            <button onclick="runAIAnalysis()" style="padding:9px 22px;border:1px solid var(--accent);border-radius:var(--radius);background:transparent;color:var(--accent);font-size:12px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 200ms ease;" onmouseover="this.style.background='var(--accent)';this.style.color='var(--bg)'" onmouseout="this.style.background='transparent';this.style.color='var(--accent)'">
+              Analyse →
+            </button>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:10px;font-weight:300;">Powered by Claude AI</div>
+          </div>
+          <!-- result state (hidden until analysis runs) -->
+          <div id="ai-result" style="display:none;">
+            <div class="ai-signal-row">
+              <div class="signal-badge" id="ai-signal-badge">—</div>
+              <div class="conf-wrap">
+                <div class="conf-value" id="ai-confidence">—</div>
+                <div class="conf-label">Confidence</div>
+              </div>
+            </div>
+            <div class="conf-bar"><div class="conf-fill" id="ai-conf-fill" style="width:0%"></div></div>
+            <div class="regime-row">
+              <div class="regime-dot" id="ai-regime-dot"></div>
+              <span class="regime-label">Regime</span>
+              <span class="regime-value" id="ai-regime">—</span>
+            </div>
+            <div class="metrics-grid">
+              <div class="metric-card"><div class="metric-label">Entry</div><div class="metric-value" id="ai-entry">—</div></div>
+              <div class="metric-card"><div class="metric-label">Stop Loss</div><div class="metric-value red" id="ai-sl">—</div></div>
+              <div class="metric-card"><div class="metric-label">Take Profit</div><div class="metric-value green" id="ai-tp">—</div></div>
+              <div class="metric-card"><div class="metric-label">Timeframe</div><div class="metric-value" id="ai-tf">—</div></div>
+            </div>
+            <div class="backtest-area" style="margin-top:12px;">
+              <div class="backtest-header">
+                <span class="backtest-label">AI Summary</span>
+                <button onclick="document.getElementById('ai-idle').style.display='';document.getElementById('ai-result').style.display='none';" style="font-size:10px;color:var(--text-muted);background:none;border:none;cursor:pointer;letter-spacing:0.04em;">↩ Re-analyse</button>
+              </div>
+              <div id="ai-summary" style="font-size:11px;font-weight:300;color:var(--text-secondary);line-height:1.6;margin-top:8px;"></div>
+            </div>
+          </div>
+          <!-- loading state -->
+          <div id="ai-loading" style="display:none;text-align:center;padding:40px 16px;">
+            <div style="width:20px;height:20px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px;"></div>
+            <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.06em;">Analysing…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ───── PAYMENT PANEL ───── -->
+<div class="payment-overlay" id="payment-overlay" onclick="closePaymentPanel()"></div>
+<div class="payment-panel" id="payment-panel">
+  <button class="panel-close" onclick="closePaymentPanel()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="panel-title">Unlock Premium</div>
+  <p class="panel-sub">Get AI signals, risk metrics, and backtest results for every instrument.</p>
+
+  <div class="plan-card-pay">
+    <div class="plan-card-pay-header">
+      <span class="plan-name">Premium</span>
+      <span class="plan-price-pay">₹50 <span>/ week</span></span>
+    </div>
+    <ul class="plan-features-pay">
+      <li><span style="color:var(--accent);display:flex;">${ICON['sparkles']}</span> AI signals: BUY / SELL / HOLD + confidence</li>
+      <li><span style="color:var(--accent);display:flex;">${ICON['sparkles']}</span> Market regime detection</li>
+      <li><span style="color:var(--accent);display:flex;">${ICON['sparkles']}</span> Entry, stop loss, take profit levels</li>
+      <li><span style="color:var(--accent);display:flex;">${ICON['sparkles']}</span> Full backtest with equity curve</li>
+      <li><span style="color:var(--accent);display:flex;">${ICON['sparkles']}</span> Custom indicator studio (5 saved)</li>
+      <li><span style="color:var(--accent);display:flex;">${ICON['sparkles']}</span> 500 API calls/day (10× more)</li>
+    </ul>
+  </div>
+
+  <button class="pay-btn" onclick="handlePayment()">Pay ₹50 with Razorpay →</button>
+  <p class="pay-note">
+    Auto-renewing weekly. Cancel anytime.<br>
+    Card details handled by <a href="#">Razorpay</a> — APEX never stores them.<br>
+    By paying you agree to our <a href="legal.html#terms">Terms of Service</a>.
+  </p>
+</div>
+
+<!-- Lightweight Charts by TradingView (open-source, works for all exchanges) -->
+<!-- External SDKs -->
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+// ────────────────────────────────────────────────────
+// SUPABASE — AUTH + PROFILE
+// ────────────────────────────────────────────────────
+const SUPA_URL  = 'https://sjfeyjnoxcteexhpszfw.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqZmV5am5veGN0ZWV4aHBzemZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4ODcxNTAsImV4cCI6MjA5MTQ2MzE1MH0.zdXfTOqYxlm0A-tBZSQEDeDAUsFZl4kbvnymnhUw9vY';
+const sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
+
+// Current user state
+let apexUser    = null;   // Supabase auth user
+let apexProfile = null;   // Row from profiles table
+let apexPlan    = 'free'; // 'free' | 'pro'
+
+// ── Session guard — redirect to auth if not logged in ──
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    window.location.href = 'auth.html';
+    return false;
+  }
+  apexUser = session.user;
+  await loadProfile();
+  return true;
+}
+
+// ── Load profile + apply plan state ──
+async function loadProfile() {
+  if (!apexUser) return;
+  const { data } = await sb
+    .from('profiles')
+    .select('*')
+    .eq('id', apexUser.id)
+    .single();
+
+  if (data) {
+    apexProfile = data;
+    // Check if pro plan is still valid
+    const expiry = data.plan_expires_at ? new Date(data.plan_expires_at) : null;
+    apexPlan = (data.plan === 'pro' && expiry && expiry > new Date()) ? 'pro' : 'free';
+  }
+  updateUserChip();
+  applyPlanGating();
+}
+
+// ── Update topbar user chip ──
+function updateUserChip() {
+  const email   = apexUser?.email || '';
+  const initials = email.slice(0, 2).toUpperCase();
+  const el = document.getElementById('user-avatar');
+  const emailEl = document.getElementById('user-email');
+  const badgeEl = document.getElementById('plan-badge');
+  if (el) el.textContent = initials;
+  if (emailEl) emailEl.textContent = email;
+  if (badgeEl) {
+    badgeEl.textContent = apexPlan === 'pro' ? 'Pro' : 'Free';
+    badgeEl.className = apexPlan === 'pro' ? 'plan-badge pro' : 'plan-badge';
+  }
+}
+
+// ── Apply plan gating across the dashboard ──
+function applyPlanGating() {
+  const isPro = apexPlan === 'pro';
+
+  // AI analysis panel — show/hide locked overlay
+  const aiOverlay = document.getElementById('ai-locked');
+  if (aiOverlay) aiOverlay.style.display = isPro ? 'none' : '';
+
+  // Custom indicator chip — lock for free users
+  const customChip = document.querySelector('.chip.locked');
+  if (customChip) customChip.style.opacity = isPro ? '1' : '0.5';
+
+  // Filter limit badge (free = max 3 watchlist adds, pro = unlimited)
+  window.maxWatchlistItems = isPro ? Infinity : 5;
+}
+
+// ── Sign out ──
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = 'auth.html';
+}
+
+// ────────────────────────────────────────────────────
+// INSTRUMENT DATA
+// ────────────────────────────────────────────────────
+
+const INSTRUMENTS = {
+  equities: {
+    label: 'Equities',
+    icon: 'trending-up',
+    subcats: {
+      india: {
+        label: 'India NSE / BSE',
+        count: '500+',
+        items: [
+          { name:'Reliance Industries', t:'RELIANCE', tv:'NSE:RELIANCE', ex:'NSE', ch:'+1.24%', d:'up', price:'₹2,847' },
+          { name:'TCS', t:'TCS', tv:'NSE:TCS', ex:'NSE', ch:'-0.31%', d:'down', price:'₹3,521' },
+          { name:'HDFC Bank', t:'HDFCBANK', tv:'NSE:HDFCBANK', ex:'NSE', ch:'+0.89%', d:'up', price:'₹1,642' },
+          { name:'Infosys', t:'INFY', tv:'NSE:INFY', ex:'NSE', ch:'-0.55%', d:'down', price:'₹1,787' },
+          { name:'ICICI Bank', t:'ICICIBANK', tv:'NSE:ICICIBANK', ex:'NSE', ch:'+1.10%', d:'up', price:'₹1,234' },
+          { name:'ITC Ltd', t:'ITC', tv:'NSE:ITC', ex:'NSE', ch:'+0.43%', d:'up', price:'₹456' },
+          { name:'Kotak Mahindra', t:'KOTAKBANK', tv:'NSE:KOTAKBANK', ex:'NSE', ch:'-0.22%', d:'down', price:'₹1,821' },
+          { name:'Asian Paints', t:'ASIANPAINT', tv:'NSE:ASIANPAINT', ex:'NSE', ch:'+0.67%', d:'up', price:'₹2,908' },
+          { name:'Wipro', t:'WIPRO', tv:'NSE:WIPRO', ex:'NSE', ch:'-0.14%', d:'down', price:'₹456' },
+          { name:'Bajaj Finance', t:'BAJFINANCE', tv:'NSE:BAJFINANCE', ex:'NSE', ch:'+1.88%', d:'up', price:'₹7,241' },
+          { name:'SBI', t:'SBIN', tv:'NSE:SBIN', ex:'NSE', ch:'+0.35%', d:'up', price:'₹782' },
+          { name:'L&T', t:'LT', tv:'NSE:LT', ex:'NSE', ch:'-0.72%', d:'down', price:'₹3,412' },
+          { name:'Axis Bank', t:'AXISBANK', tv:'NSE:AXISBANK', ex:'NSE', ch:'+0.91%', d:'up', price:'₹1,108' },
+          { name:'Maruti Suzuki', t:'MARUTI', tv:'NSE:MARUTI', ex:'NSE', ch:'-0.45%', d:'down', price:'₹12,341' },
+          { name:'Bharti Airtel', t:'BHARTIARTL', tv:'NSE:BHARTIARTL', ex:'NSE', ch:'+0.78%', d:'up', price:'₹1,654' },
+        ],
+        more: '500+ India stocks (Nifty 500 complete list)'
+      },
+      us: {
+        label: 'US Markets',
+        count: '500+',
+        items: [
+          { name:'Apple Inc.', t:'AAPL', tv:'NASDAQ:AAPL', ex:'NASDAQ', ch:'+0.87%', d:'up', price:'$189.30' },
+          { name:'Microsoft', t:'MSFT', tv:'NASDAQ:MSFT', ex:'NASDAQ', ch:'+1.12%', d:'up', price:'$419.50' },
+          { name:'NVIDIA', t:'NVDA', tv:'NASDAQ:NVDA', ex:'NASDAQ', ch:'+2.45%', d:'up', price:'$878.40' },
+          { name:'Google (Alphabet)', t:'GOOGL', tv:'NASDAQ:GOOGL', ex:'NASDAQ', ch:'-0.34%', d:'down', price:'$174.20' },
+          { name:'Amazon', t:'AMZN', tv:'NASDAQ:AMZN', ex:'NASDAQ', ch:'+0.91%', d:'up', price:'$186.80' },
+          { name:'Meta Platforms', t:'META', tv:'NASDAQ:META', ex:'NASDAQ', ch:'+1.67%', d:'up', price:'$512.30' },
+          { name:'Tesla', t:'TSLA', tv:'NASDAQ:TSLA', ex:'NASDAQ', ch:'-1.23%', d:'down', price:'$224.10' },
+          { name:'Berkshire B', t:'BRK-B', tv:'NYSE:BRK.B', ex:'NYSE', ch:'+0.28%', d:'up', price:'$412.60' },
+          { name:'JPMorgan', t:'JPM', tv:'NYSE:JPM', ex:'NYSE', ch:'-0.44%', d:'down', price:'$198.40' },
+          { name:'Johnson & J', t:'JNJ', tv:'NYSE:JNJ', ex:'NYSE', ch:'+0.15%', d:'up', price:'$152.30' },
+          { name:'Visa', t:'V', tv:'NYSE:V', ex:'NYSE', ch:'+0.62%', d:'up', price:'$278.10' },
+          { name:'UnitedHealth', t:'UNH', tv:'NYSE:UNH', ex:'NYSE', ch:'-0.81%', d:'down', price:'$521.40' },
+        ],
+        more: '500+ US stocks (S&P 500 complete list)'
+      },
+      adrs: {
+        label: 'Global ADRs',
+        count: '100+',
+        items: [
+          { name:'Infosys ADR', t:'INFY', tv:'NYSE:INFY', ex:'NYSE', ch:'+0.45%', d:'up', price:'$21.40' },
+          { name:'HDFC Bank ADR', t:'HDB', tv:'NYSE:HDB', ex:'NYSE', ch:'+0.32%', d:'up', price:'$62.10' },
+          { name:'WiproCorp ADR', t:'WIT', tv:'NYSE:WIT', ex:'NYSE', ch:'-0.18%', d:'down', price:'$5.60' },
+          { name:'ICICI Bank ADR', t:'IBN', tv:'NYSE:IBN', ex:'NYSE', ch:'+0.71%', d:'up', price:'$29.40' },
+          { name:'Dr Reddy ADR', t:'RDY', tv:'NYSE:RDY', ex:'NYSE', ch:'+0.25%', d:'up', price:'$15.20' },
+          { name:'MakeMyTrip', t:'MMYT', tv:'NASDAQ:MMYT', ex:'NASDAQ', ch:'+1.34%', d:'up', price:'$78.50' },
+        ],
+        more: '100+ Global ADRs'
+      }
+    }
+  },
+  crypto: {
+    label: 'Crypto',
+    icon: 'bitcoin',
+    count: '500+',
+    items: [
+      { name:'Bitcoin', t:'BTC', tv:'BINANCE:BTCUSDT', ex:'CRYPTO', ch:'+2.15%', d:'up', price:'$68,420' },
+      { name:'Ethereum', t:'ETH', tv:'BINANCE:ETHUSDT', ex:'CRYPTO', ch:'+3.41%', d:'up', price:'$3,842' },
+      { name:'BNB', t:'BNB', tv:'BINANCE:BNBUSDT', ex:'CRYPTO', ch:'+1.08%', d:'up', price:'$601' },
+      { name:'Solana', t:'SOL', tv:'BINANCE:SOLUSDT', ex:'CRYPTO', ch:'+4.72%', d:'up', price:'$182' },
+      { name:'XRP', t:'XRP', tv:'BINANCE:XRPUSDT', ex:'CRYPTO', ch:'-0.89%', d:'down', price:'$0.627' },
+      { name:'Cardano', t:'ADA', tv:'BINANCE:ADAUSDT', ex:'CRYPTO', ch:'+1.56%', d:'up', price:'$0.541' },
+      { name:'Avalanche', t:'AVAX', tv:'BINANCE:AVAXUSDT', ex:'CRYPTO', ch:'-2.14%', d:'down', price:'$42.10' },
+      { name:'Dogecoin', t:'DOGE', tv:'BINANCE:DOGEUSDT', ex:'CRYPTO', ch:'+5.30%', d:'up', price:'$0.183' },
+      { name:'Polkadot', t:'DOT', tv:'BINANCE:DOTUSDT', ex:'CRYPTO', ch:'-1.02%', d:'down', price:'$9.82' },
+      { name:'Polygon', t:'MATIC', tv:'BINANCE:MATICUSDT', ex:'CRYPTO', ch:'+2.87%', d:'up', price:'$1.03' },
+      { name:'Chainlink', t:'LINK', tv:'BINANCE:LINKUSDT', ex:'CRYPTO', ch:'+1.44%', d:'up', price:'$18.70' },
+      { name:'Uniswap', t:'UNI', tv:'BINANCE:UNIUSDT', ex:'CRYPTO', ch:'-0.67%', d:'down', price:'$11.40' },
+    ],
+    more: '500+ coins via CoinGecko (live loaded)'
+  },
+  commodities: {
+    label: 'Commodities',
+    icon: 'layers',
+    subcats: {
+      metals: {
+        label: 'Metals',
+        items: [
+          { name:'Gold', t:'GC=F', tv:'COMEX:GC1!', ex:'COMEX', ch:'+0.34%', d:'up', price:'$2,341' },
+          { name:'Silver', t:'SI=F', tv:'COMEX:SI1!', ex:'COMEX', ch:'+0.78%', d:'up', price:'$27.60' },
+          { name:'Platinum', t:'PL=F', tv:'NYMEX:PL1!', ex:'NYMEX', ch:'-0.31%', d:'down', price:'$912' },
+          { name:'Palladium', t:'PA=F', tv:'NYMEX:PA1!', ex:'NYMEX', ch:'+0.67%', d:'up', price:'$1,041' },
+          { name:'Copper', t:'HG=F', tv:'COMEX:HG1!', ex:'COMEX', ch:'+0.45%', d:'up', price:'$4.31' },
+        ]
+      },
+      energy: {
+        label: 'Energy',
+        items: [
+          { name:'Crude Oil WTI', t:'CL=F', tv:'NYMEX:CL1!', ex:'NYMEX', ch:'-0.92%', d:'down', price:'$78.40' },
+          { name:'Brent Crude', t:'BZ=F', tv:'NYMEX:BB1!', ex:'NYMEX', ch:'-0.88%', d:'down', price:'$82.10' },
+          { name:'Natural Gas', t:'NG=F', tv:'NYMEX:NG1!', ex:'NYMEX', ch:'+1.22%', d:'up', price:'$2.14' },
+          { name:'Gasoline', t:'RB=F', tv:'NYMEX:RB1!', ex:'NYMEX', ch:'-0.54%', d:'down', price:'$2.41' },
+          { name:'Heating Oil', t:'HO=F', tv:'NYMEX:HO1!', ex:'NYMEX', ch:'-0.33%', d:'down', price:'$2.67' },
+        ]
+      },
+      agriculture: {
+        label: 'Agriculture',
+        items: [
+          { name:'Wheat', t:'ZW=F', tv:'CBOT:ZW1!', ex:'CBOT', ch:'+1.10%', d:'up', price:'$580' },
+          { name:'Corn', t:'ZC=F', tv:'CBOT:ZC1!', ex:'CBOT', ch:'-0.55%', d:'down', price:'$441' },
+          { name:'Soybeans', t:'ZS=F', tv:'CBOT:ZS1!', ex:'CBOT', ch:'+0.23%', d:'up', price:'$1,172' },
+          { name:'Coffee', t:'KC=F', tv:'ICEUS:KC1!', ex:'ICE', ch:'+2.14%', d:'up', price:'$184' },
+          { name:'Sugar', t:'SB=F', tv:'ICEUS:SB1!', ex:'ICE', ch:'+0.87%', d:'up', price:'$22.1' },
+          { name:'Cotton', t:'CT=F', tv:'ICEUS:CT1!', ex:'ICE', ch:'-0.44%', d:'down', price:'$81.3' },
+        ]
+      }
+    }
+  },
+  forex: {
+    label: 'Forex',
+    icon: 'repeat',
+    count: '80+',
+    items: [
+      { name:'EUR / USD', t:'EURUSD=X', tv:'FX:EURUSD', ex:'FX', ch:'+0.12%', d:'up', price:'1.0841' },
+      { name:'GBP / USD', t:'GBPUSD=X', tv:'FX:GBPUSD', ex:'FX', ch:'-0.08%', d:'down', price:'1.2654' },
+      { name:'USD / JPY', t:'USDJPY=X', tv:'FX:USDJPY', ex:'FX', ch:'+0.22%', d:'up', price:'151.42' },
+      { name:'USD / INR', t:'USDINR=X', tv:'FX:USDINR', ex:'FX', ch:'+0.05%', d:'up', price:'83.41' },
+      { name:'AUD / USD', t:'AUDUSD=X', tv:'FX:AUDUSD', ex:'FX', ch:'-0.14%', d:'down', price:'0.6541' },
+      { name:'USD / CAD', t:'USDCAD=X', tv:'FX:USDCAD', ex:'FX', ch:'+0.09%', d:'up', price:'1.3641' },
+      { name:'USD / CHF', t:'USDCHF=X', tv:'FX:USDCHF', ex:'FX', ch:'-0.03%', d:'down', price:'0.8941' },
+      { name:'EUR / GBP', t:'EURGBP=X', tv:'FX:EURGBP', ex:'FX', ch:'+0.07%', d:'up', price:'0.8567' },
+      { name:'EUR / JPY', t:'EURJPY=X', tv:'FX:EURJPY', ex:'FX', ch:'+0.31%', d:'up', price:'164.12' },
+      { name:'GBP / JPY', t:'GBPJPY=X', tv:'FX:GBPJPY', ex:'FX', ch:'+0.18%', d:'up', price:'191.40' },
+      { name:'NZD / USD', t:'NZDUSD=X', tv:'FX:NZDUSD', ex:'FX', ch:'-0.21%', d:'down', price:'0.6041' },
+      { name:'USD / SGD', t:'USDSGD=X', tv:'FX:USDSGD', ex:'FX', ch:'+0.04%', d:'up', price:'1.3411' },
+    ],
+    more: '80+ Forex pairs available'
+  },
+  indices: {
+    label: 'Indices',
+    icon: 'activity',
+    count: '50+',
+    items: [
+      { name:'Nifty 50', t:'^NSEI', tv:'NSE:NIFTY', ex:'NSE', ch:'+0.74%', d:'up', price:'₹22,413' },
+      { name:'Sensex', t:'^BSESN', tv:'BSE:SENSEX', ex:'BSE', ch:'+0.71%', d:'up', price:'₹73,841' },
+      { name:'S&P 500', t:'^GSPC', tv:'SP:SPX', ex:'NYSE', ch:'+0.43%', d:'up', price:'$5,241' },
+      { name:'NASDAQ', t:'^IXIC', tv:'NASDAQ:NDX', ex:'NASDAQ', ch:'+0.88%', d:'up', price:'$18,412' },
+      { name:'Dow Jones', t:'^DJI', tv:'DJ:DJI', ex:'NYSE', ch:'+0.22%', d:'up', price:'$39,124' },
+      { name:'FTSE 100', t:'^FTSE', tv:'LSE:UKX', ex:'LSE', ch:'-0.34%', d:'down', price:'7,841' },
+      { name:'DAX', t:'^GDAXI', tv:'XETR:DAX', ex:'XETR', ch:'+0.56%', d:'up', price:'18,241' },
+      { name:'Nikkei 225', t:'^N225', tv:'TVC:NI225', ex:'TSE', ch:'+1.12%', d:'up', price:'¥38,412' },
+      { name:'Hang Seng', t:'^HSI', tv:'TVC:HSI', ex:'HKEX', ch:'-0.67%', d:'down', price:'17,241' },
+      { name:'Bank Nifty', t:'^NSEBANK', tv:'NSE:BANKNIFTY', ex:'NSE', ch:'+1.02%', d:'up', price:'₹47,841' },
+      { name:'Nifty IT', t:'^CNXIT', tv:'NSE:NIFTYIT', ex:'NSE', ch:'-0.45%', d:'down', price:'₹34,241' },
+      { name:'CAC 40', t:'^FCHI', tv:'EURONEXT:CAC40', ex:'Euronext', ch:'+0.38%', d:'up', price:'8,241' },
+    ],
+    more: '50+ global indices'
+  },
+  etfs: {
+    label: 'ETFs & Funds',
+    icon: 'package',
+    subcats: {
+      equity: {
+        label: 'Equity ETFs',
+        items: [
+          { name:'Nifty BeES', t:'NIFTYBEES.NS', tv:'NSE:NIFTYBEES', ex:'NSE', ch:'+0.74%', d:'up', price:'₹224' },
+          { name:'Junior BeES', t:'JUNIORBEES.NS', tv:'NSE:JUNIORBEES', ex:'NSE', ch:'+0.91%', d:'up', price:'₹71' },
+          { name:'Bank BeES', t:'BANKBEES.NS', tv:'NSE:BANKBEES', ex:'NSE', ch:'+1.02%', d:'up', price:'₹478' },
+          { name:'SPDR S&P 500', t:'SPY', tv:'AMEX:SPY', ex:'NYSE', ch:'+0.43%', d:'up', price:'$524' },
+          { name:'Invesco QQQ', t:'QQQ', tv:'NASDAQ:QQQ', ex:'NASDAQ', ch:'+0.88%', d:'up', price:'$448' },
+        ]
+      },
+      gold: {
+        label: 'Gold ETFs',
+        items: [
+          { name:'Gold BeES', t:'GOLDBEES.NS', tv:'NSE:GOLDBEES', ex:'NSE', ch:'+0.34%', d:'up', price:'₹58' },
+          { name:'HDFC Gold ETF', t:'HDFCGOLD.NS', tv:'NSE:HDFCGOLD', ex:'NSE', ch:'+0.31%', d:'up', price:'₹57' },
+          { name:'SPDR Gold', t:'GLD', tv:'AMEX:GLD', ex:'NYSE', ch:'+0.34%', d:'up', price:'$214' },
+        ]
+      },
+      reits: {
+        label: 'REITs & InvITs',
+        items: [
+          { name:'Embassy REIT', t:'EMBASSY.NS', tv:'NSE:EMBASSY', ex:'NSE', ch:'+0.21%', d:'up', price:'₹341' },
+          { name:'Mindspace REIT', t:'MINDSPACE.NS', tv:'NSE:MINDSPACE', ex:'NSE', ch:'+0.15%', d:'up', price:'₹312' },
+          { name:'PowerGrid InvIT', t:'POWGRID.NS', tv:'NSE:POWGRIDINVIT', ex:'NSE', ch:'-0.08%', d:'down', price:'₹98' },
+        ]
+      }
+    }
+  },
+  mutualfunds: {
+    label: 'Mutual Funds',
+    icon: 'pie-chart',
+    subcats: {
+      largecap: {
+        label: 'Large Cap',
+        items: [
+          { name:'Axis Bluechip', t:'0P0001GXVH.BO', tv:'BSE:AXISBLUECHIP', ex:'BSE', ch:'+0.68%', d:'up', price:'₹52.41' },
+          { name:'Mirae Asset Bluechip', t:'0P00012TM7.BO', tv:'BSE:MIRAEBLUECHIP', ex:'BSE', ch:'+0.71%', d:'up', price:'₹108.2' },
+          { name:'SBI Bluechip', t:'0P0001N0OQ.BO', tv:'BSE:SBIBLUECHIP', ex:'BSE', ch:'+0.61%', d:'up', price:'₹68.4' },
+        ]
+      },
+      midcap: {
+        label: 'Mid Cap',
+        items: [
+          { name:'Kotak Emerging Equity', t:'0P0000XVMP.BO', tv:'BSE:KOTAKMIDCAP', ex:'BSE', ch:'+0.84%', d:'up', price:'₹112.4' },
+          { name:'HDFC Mid-Cap Opp', t:'0P0000XW1N.BO', tv:'BSE:HDFCMIDCAP', ex:'BSE', ch:'+0.78%', d:'up', price:'₹141.2' },
+        ]
+      },
+      smallcap: {
+        label: 'Small Cap',
+        items: [
+          { name:'SBI Small Cap', t:'0P0001DOER.BO', tv:'BSE:SBISMALLCAP', ex:'BSE', ch:'+1.12%', d:'up', price:'₹124.6' },
+          { name:'Nippon Small Cap', t:'0P0000XVLX.BO', tv:'BSE:NIPPONSMALLCAP', ex:'BSE', ch:'+0.98%', d:'up', price:'₹148.3' },
+        ]
+      },
+      elss: {
+        label: 'ELSS (Tax Saving)',
+        items: [
+          { name:'Axis Long Term Equity', t:'0P00012TNC.BO', tv:'BSE:AXISELSS', ex:'BSE', ch:'+0.74%', d:'up', price:'₹76.8' },
+          { name:'Mirae Asset ELSS', t:'0P0001DJP8.BO', tv:'BSE:MIRAEELSS', ex:'BSE', ch:'+0.82%', d:'up', price:'₹32.4' },
+        ]
+      }
+    }
+  }
+};
+
+// ────────────────────────────────────────────────────
+// INLINE SVG ICON LIBRARY (no external CDN)
+// ────────────────────────────────────────────────────
+const ICON = {
+  'trending-up':  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22,7 13.5,15.5 8.5,10.5 2,17"/><polyline points="16,7 22,7 22,13"/></svg>`,
+  'bitcoin':      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9.5 2h6a3 3 0 0 1 0 6h-6m0-6v6m0-6H7m2.5 6h7a3 3 0 0 1 0 6h-7m0-6v6m0 0H7m2.5-12v-2m0 20v-2M7 5H5m2 14H5"/></svg>`,
+  'layers':       `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 2,7 12,12 22,7"/><polyline points="2,17 12,22 22,17"/><polyline points="2,12 12,17 22,12"/></svg>`,
+  'repeat':       `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17,1 21,5 17,9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7,23 3,19 7,15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+  'activity':     `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>`,
+  'package':      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27,6.96 12,12.01 20.73,6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+  'pie-chart':    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>`,
+  'chevron-down': `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="6,9 12,15 18,9"/></svg>`,
+  'chevron-right':`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="9,18 15,12 9,6"/></svg>`,
+  'sparkles':     `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>`,
+};
+
+// ────────────────────────────────────────────────────
+// STATE
+// ────────────────────────────────────────────────────
+let currentSymbol = 'NSE:RELIANCE';
+let currentInterval = 'D';
+let lwChart = null;  // Lightweight Charts instance
+
+// Fallback news (used only when live fetch fails)
+const newsData = {
+  default: [
+    { h: 'Markets update: FII activity and global cues drive sentiment', src: 'ET Markets', t: '1h ago' },
+    { h: 'RBI holds repo rate; signals cautious stance on inflation', src: 'Bloomberg', t: '3h ago' },
+    { h: 'Q3 earnings season: IT sector outperforms expectations', src: 'Moneycontrol', t: '5h ago' },
+    { h: 'Global commodity rally continues on supply chain concerns', src: 'Reuters', t: '7h ago' },
+    { h: 'Crypto market gains amid institutional inflows', src: 'CoinDesk', t: '9h ago' },
+  ]
+};
+
+// ────────────────────────────────────────────────────
+// SIDEBAR RENDERING
+// ────────────────────────────────────────────────────
+
+function instRow(inst) {
+  return `<div class="inst-row"
+      data-tv="${inst.tv}" data-name="${inst.name}" data-ticker="${inst.t}"
+      data-ex="${inst.ex}" data-price="${inst.price}" data-change="${inst.ch}" data-dir="${inst.d}">
+    <div class="inst-left">
+      <div class="inst-name">${inst.name}</div>
+      <div class="inst-ticker">${inst.t}</div>
+    </div>
+    <div class="inst-right">
+      <div class="inst-price-disp">${inst.price}</div>
+      <div class="inst-change ${inst.d}">${inst.ch}</div>
+    </div>
+  </div>`;
+}
+
+function renderSidebar() {
+  const nav = document.getElementById('sidebar-nav');
+  let html = '';
+
+  Object.entries(INSTRUMENTS).forEach(([key, cat]) => {
+    if (cat.subcats) {
+      let subcatsHtml = '';
+      Object.entries(cat.subcats).forEach(([subKey, sub]) => {
+        const rows = (sub.items || []).slice(0, 8).map(instRow).join('');
+        const more = sub.more ? `<div class="more-row">${sub.more}</div>` : '';
+        subcatsHtml += `
+          <div class="subcat" id="sub-${key}-${subKey}">
+            <div class="subcat-header" onclick="toggleSubcat('sub-${key}-${subKey}')">
+              <span>${sub.label}</span>
+              <span class="subcat-chevron">${ICON['chevron-right']}</span>
+            </div>
+            <div class="subcat-items">${rows}${more}</div>
+          </div>`;
+      });
+      html += `
+        <div class="cat-group" id="cat-${key}">
+          <div class="cat-header" onclick="toggleCat('cat-${key}')">
+            <div class="cat-header-inner">${ICON[cat.icon] || ''}<span class="cat-name">${cat.label}</span></div>
+            <span class="cat-chevron">${ICON['chevron-down']}</span>
+          </div>
+          <div class="cat-body">${subcatsHtml}</div>
+        </div>`;
+    } else {
+      const rows = (cat.items || []).slice(0, 10).map(instRow).join('');
+      const more = cat.more ? `<div class="more-row">${cat.more}</div>` : '';
+      html += `
+        <div class="cat-group" id="cat-${key}">
+          <div class="cat-header" onclick="toggleCat('cat-${key}')">
+            <div class="cat-header-inner">${ICON[cat.icon] || ''}<span class="cat-name">${cat.label}</span><span class="cat-count">${cat.count || ''}</span></div>
+            <span class="cat-chevron">${ICON['chevron-down']}</span>
+          </div>
+          <div class="cat-body">${rows}${more}</div>
+        </div>`;
+    }
+  });
+
+  nav.innerHTML = html;
+  attachRowListeners();
+
+  // Auto-open equities > india
+  const firstCat = nav.querySelector('.cat-group');
+  if (firstCat) {
+    firstCat.classList.add('open');
+    const firstSub = firstCat.querySelector('.subcat');
+    if (firstSub) firstSub.classList.add('open');
+  }
+}
+
+function attachRowListeners() {
+  document.querySelectorAll('.inst-row').forEach(row => {
+    row.addEventListener('click', () => selectInstrument(row));
+  });
+}
+
+function toggleCat(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function toggleSubcat(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ────────────────────────────────────────────────────
+// INSTRUMENT SELECTION
+// ────────────────────────────────────────────────────
+
+function selectInstrument(row) {
+  // Deactivate all rows
+  document.querySelectorAll('.inst-row').forEach(r => r.classList.remove('active'));
+  row.classList.add('active');
+
+  const tv   = row.dataset.tv;
+  const name = row.dataset.name;
+  const ticker = row.dataset.ticker;
+  const ex   = row.dataset.ex;
+  const price = row.dataset.price;
+  const ch  = row.dataset.change;
+  const dir = row.dataset.dir;
+
+  // Update info panel
+  document.getElementById('info-name').textContent = name;
+  document.getElementById('info-ticker').textContent = tv;
+  document.getElementById('info-exchange').textContent = ex;
+  setInfoPrice(price);
+  const chBadge = document.getElementById('info-change');
+  chBadge.textContent = (dir === 'up' ? '▲ ' : '▼ ') + ch;
+  chBadge.className = `change-badge ${dir}`;
+
+  // Update chart
+  currentSymbol = tv;
+  loadChart(tv, currentInterval);
+
+  // Load news
+  loadNews(tv);
+}
+
+function loadNews(tvSymbol) {
+  // Delegate to live news engine
+  startNewsRefresh(tvSymbol);
+}
+
+function refreshNews() {
+  const list = document.getElementById('news-list');
+  list.style.opacity = '0.4';
+  list.style.transition = 'opacity 200ms ease';
+  // Clear cache to force fresh fetch
+  delete newsCache[currentSymbol];
+  fetchLiveNews(currentSymbol).then(() => { list.style.opacity = '1'; });
+}
+
+// ────────────────────────────────────────────────────
+// TRADINGVIEW WIDGET
+// ────────────────────────────────────────────────────
+
+// ── TradingView symbol → Yahoo Finance symbol ──
+const TV_TO_YF = {
+  // NSE Equities
+  'NSE:RELIANCE':'RELIANCE.NS','NSE:TCS':'TCS.NS','NSE:HDFCBANK':'HDFCBANK.NS',
+  'NSE:INFY':'INFY.NS','NSE:ICICIBANK':'ICICIBANK.NS','NSE:ITC':'ITC.NS',
+  'NSE:KOTAKBANK':'KOTAKBANK.NS','NSE:ASIANPAINT':'ASIANPAINT.NS','NSE:WIPRO':'WIPRO.NS',
+  'NSE:BAJFINANCE':'BAJFINANCE.NS','NSE:SBIN':'SBIN.NS','NSE:LT':'LT.NS',
+  'NSE:AXISBANK':'AXISBANK.NS','NSE:MARUTI':'MARUTI.NS','NSE:BHARTIARTL':'BHARTIARTL.NS',
+  // US Equities
+  'NASDAQ:AAPL':'AAPL','NASDAQ:MSFT':'MSFT','NASDAQ:NVDA':'NVDA','NASDAQ:GOOGL':'GOOGL',
+  'NASDAQ:AMZN':'AMZN','NASDAQ:META':'META','NASDAQ:TSLA':'TSLA',
+  'NYSE:BRK.B':'BRK-B','NYSE:JPM':'JPM','NYSE:JNJ':'JNJ','NYSE:V':'V','NYSE:UNH':'UNH',
+  // ADRs
+  'NYSE:INFY':'INFY','NYSE:HDB':'HDB','NYSE:WIT':'WIT','NYSE:IBN':'IBN',
+  'NYSE:RDY':'RDY','NASDAQ:MMYT':'MMYT',
+  // Crypto
+  'BINANCE:BTCUSDT':'BTC-USD','BINANCE:ETHUSDT':'ETH-USD','BINANCE:BNBUSDT':'BNB-USD',
+  'BINANCE:SOLUSDT':'SOL-USD','BINANCE:XRPUSDT':'XRP-USD','BINANCE:ADAUSDT':'ADA-USD',
+  'BINANCE:AVAXUSDT':'AVAX-USD','BINANCE:DOGEUSDT':'DOGE-USD','BINANCE:DOTUSDT':'DOT-USD',
+  'BINANCE:MATICUSDT':'MATIC-USD','BINANCE:LINKUSDT':'LINK-USD','BINANCE:UNIUSDT':'UNI-USD',
+  // Commodities
+  'COMEX:GC1!':'GC=F','COMEX:SI1!':'SI=F','NYMEX:PL1!':'PL=F','NYMEX:PA1!':'PA=F',
+  'COMEX:HG1!':'HG=F','NYMEX:CL1!':'CL=F','NYMEX:BB1!':'BZ=F','NYMEX:NG1!':'NG=F',
+  'NYMEX:RB1!':'RB=F','NYMEX:HO1!':'HO=F',
+  'CBOT:ZW1!':'ZW=F','CBOT:ZC1!':'ZC=F','CBOT:ZS1!':'ZS=F',
+  'ICEUS:KC1!':'KC=F','ICEUS:SB1!':'SB=F','ICEUS:CT1!':'CT=F',
+  // Forex
+  'FX:EURUSD':'EURUSD=X','FX:GBPUSD':'GBPUSD=X','FX:USDJPY':'JPY=X',
+  'FX:USDINR':'INR=X','FX:AUDUSD':'AUDUSD=X','FX:USDCAD':'CAD=X',
+  'FX:USDCHF':'CHF=X','FX:EURGBP':'EURGBP=X','FX:EURJPY':'EURJPY=X',
+  'FX:GBPJPY':'GBPJPY=X','FX:NZDUSD':'NZDUSD=X','FX:USDSGD':'SGD=X',
+  // Indices
+  'NSE:NIFTY':'^NSEI','BSE:SENSEX':'^BSESN','SP:SPX':'^GSPC',
+  'NASDAQ:NDX':'^NDX','DJ:DJI':'^DJI','LSE:UKX':'^FTSE',
+  'XETR:DAX':'^GDAXI','TVC:NI225':'^N225','TVC:HSI':'^HSI',
+  'NSE:BANKNIFTY':'^NSEBANK','NSE:NIFTYIT':'^CNXIT','EURONEXT:CAC40':'^FCHI',
+  // ETFs
+  'NSE:NIFTYBEES':'NIFTYBEES.NS','NSE:JUNIORBEES':'JUNIORBEES.NS','NSE:BANKBEES':'BANKBEES.NS',
+  'AMEX:SPY':'SPY','NASDAQ:QQQ':'QQQ',
+  'NSE:GOLDBEES':'GOLDBEES.NS','NSE:HDFCGOLD':'HDFCGOLD.NS','AMEX:GLD':'GLD',
+};
+
+function tvToYf(tvSym) {
+  if (TV_TO_YF[tvSym]) return TV_TO_YF[tvSym];
+  const [ex, sym] = tvSym.split(':');
+  if (ex === 'NSE') return sym + '.NS';
+  if (ex === 'BSE') return sym + '.BO';
+  if (ex === 'BINANCE') return sym.replace('USDT', '-USD');
+  return sym || tvSym;
+}
+
+// Timeframe key → Yahoo Finance interval + range
+const TF_PARAMS = {
+  '1m':  { interval:'1m',  range:'1d'  },   // 1-min candles, last 1 day
+  '5m':  { interval:'5m',  range:'5d'  },   // 5-min candles, last 5 days
+  '15m': { interval:'15m', range:'5d'  },   // 15-min candles, last 5 days
+  '30m': { interval:'30m', range:'30d' },   // 30-min candles, last 30 days
+  '60':  { interval:'60m', range:'60d' },   // 1H candles, last 60 days
+  'D':   { interval:'1d',  range:'1y'  },   // Daily, 1 year
+  'W':   { interval:'1wk', range:'5y'  },   // Weekly, 5 years
+  'M':   { interval:'1mo', range:'max' },   // Monthly, all time
+  '3M':  { interval:'1d',  range:'3mo' },   // Daily candles, 3-month window
+  '6M':  { interval:'1d',  range:'6mo' },   // Daily candles, 6-month window
+  '12M': { interval:'1d',  range:'1y'  },   // Daily, 1 year
+  '2Y':  { interval:'1wk', range:'2y'  },   // Weekly, 2 years
+  '5Y':  { interval:'1wk', range:'5y'  },   // Weekly, 5 years
+  'ALL': { interval:'1mo', range:'max' },   // Monthly, max available
+};
+
+async function fetchOHLCV(yfSymbol, interval, range) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yfSymbol)}?interval=${interval}&range=${range}&includePrePost=false`;
+  try {
+    const data = await fetchWithProxy(url);
+    if (!data?.chart?.result?.[0]) return null;
+    const res   = data.chart.result[0];
+    const ts    = res.timestamp;
+    const quote = res.indicators?.quote?.[0];
+    if (!ts || !quote) return null;
+    const candles = [], volumes = [];
+    for (let i = 0; i < ts.length; i++) {
+      const o=quote.open[i], h=quote.high[i], l=quote.low[i], c=quote.close[i], v=quote.volume[i];
+      if (o==null||h==null||l==null||c==null) continue;
+      // Intraday → unix seconds; daily+ → 'YYYY-MM-DD' string
+      const time = (interval==='1h') ? ts[i] : new Date(ts[i]*1000).toISOString().slice(0,10);
+      candles.push({ time, open:+o.toFixed(4), high:+h.toFixed(4), low:+l.toFixed(4), close:+c.toFixed(4) });
+      if (v!=null) volumes.push({ time, value:v, color: c>=o ? 'rgba(74,124,89,0.35)':'rgba(124,74,74,0.35)' });
+    }
+    return candles.length ? { candles, volumes } : null;
+  } catch(e) { return null; }
+}
+
+let chartResizeObs = null;
+
+async function loadChart(tvSymbol, tfKey) {
+  const yfSymbol = tvToYf(tvSymbol);
+  const { interval, range } = TF_PARAMS[tfKey] || TF_PARAMS['D'];
+  const container = document.getElementById('tv_chart');
+
+  // Loading state
+  container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:11px;letter-spacing:0.10em;text-transform:uppercase;">Loading…</div>`;
+
+  const data = await fetchOHLCV(yfSymbol, interval, range);
+
+  if (!data) {
+    container.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;"><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">No chart data available</div><div style="font-size:10px;color:var(--text-muted);opacity:0.6;">${yfSymbol}</div></div>`;
+    return;
+  }
+
+  // Destroy old chart
+  if (lwChart) { try { lwChart.remove(); } catch(e){} lwChart = null; }
+  if (chartResizeObs) { chartResizeObs.disconnect(); chartResizeObs = null; }
+  container.innerHTML = '';
+
+  lwChart = LightweightCharts.createChart(container, {
+    width:  container.clientWidth  || 800,
+    height: container.clientHeight || 500,
+    layout: { background:{type:'solid',color:'#0a0a0a'}, textColor:'#666666' },
+    grid:   { vertLines:{color:'#1e1e1e'}, horzLines:{color:'#1e1e1e'} },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: { borderColor:'#1e1e1e', scaleMargins:{top:0.08,bottom:0.22} },
+    timeScale: { borderColor:'#1e1e1e', timeVisible:(interval==='1h'), secondsVisible:false },
+    handleScroll: { mouseWheel:true, pressedMouseMove:true },
+    handleScale:  { mouseWheel:true, pinch:true },
+  });
+
+  const candles = lwChart.addCandlestickSeries({
+    upColor:'#4a7c59', downColor:'#7c4a4a',
+    borderUpColor:'#4a7c59', borderDownColor:'#7c4a4a',
+    wickUpColor:'#4a7c59', wickDownColor:'#7c4a4a',
+  });
+  candles.setData(data.candles);
+
+  // Store data globally so indicators can compute without re-fetching
+  chartData    = data.candles;
+  chartVolData = data.volumes;
+
+  // Clear old indicator series references (chart was destroyed)
+  Object.keys(indSeries).forEach(k => delete indSeries[k]);
+
+  // Re-apply all active indicators on the new chart
+  applyAllActiveIndicators();
+
+  lwChart.timeScale().fitContent();
+
+  // Auto-resize when container size changes
+  chartResizeObs = new ResizeObserver(() => {
+    if (lwChart && container.clientWidth > 0) {
+      lwChart.applyOptions({ width:container.clientWidth, height:container.clientHeight });
+    }
+  });
+  chartResizeObs.observe(container);
+}
+
+// ────────────────────────────────────────────────────
+// TIMEFRAME
+// ────────────────────────────────────────────────────
+
+function setTF(btn, interval) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentInterval = interval;
+  loadChart(currentSymbol, interval);
+}
+
+// ────────────────────────────────────────────────────
+// INDICATOR ENGINE
+// ────────────────────────────────────────────────────
+
+let chartData    = []; // [{time, open, high, low, close}] — stored after each chart load
+let chartVolData = []; // [{time, value, color}]
+const indSeries  = {}; // indicator name → series | series[]
+const activeInds = new Set(['EMA', 'Volume']); // EMA + Volume shown by default
+
+// ── Math ───────────────────────────────────────────
+
+function calcEMA(data, period) {
+  const k = 2 / (period + 1);
+  let ema = data[0]?.close ?? 0;
+  return data.map(d => { ema = d.close * k + ema * (1 - k); return { time: d.time, value: +ema.toFixed(4) }; });
+}
+
+function calcBB(data, period = 20, mult = 2) {
+  const upper = [], middle = [], lower = [];
+  for (let i = period - 1; i < data.length; i++) {
+    const sl   = data.slice(i - period + 1, i + 1);
+    const mean = sl.reduce((s, d) => s + d.close, 0) / period;
+    const std  = Math.sqrt(sl.reduce((s, d) => s + (d.close - mean) ** 2, 0) / period);
+    middle.push({ time: data[i].time, value: +mean.toFixed(4) });
+    upper.push({ time: data[i].time, value: +(mean + mult * std).toFixed(4) });
+    lower.push({ time: data[i].time, value: +(mean - mult * std).toFixed(4) });
+  }
+  return { upper, middle, lower };
+}
+
+function calcRSI(data, period = 14) {
+  if (data.length < period + 1) return [];
+  let ag = 0, al = 0;
+  for (let i = 1; i <= period; i++) {
+    const d = data[i].close - data[i - 1].close;
+    if (d > 0) ag += d; else al -= d;
+  }
+  ag /= period; al /= period;
+  const result = [];
+  for (let i = period; i < data.length; i++) {
+    if (i > period) {
+      const d = data[i].close - data[i - 1].close;
+      ag = (ag * (period - 1) + Math.max(d, 0))  / period;
+      al = (al * (period - 1) + Math.max(-d, 0)) / period;
+    }
+    result.push({ time: data[i].time, value: +(100 - 100 / (1 + (al === 0 ? 1e9 : ag / al))).toFixed(2) });
+  }
+  return result;
+}
+
+function calcMACD(data, fast = 12, slow = 26, sigLen = 9) {
+  const K = p => 2 / (p + 1);
+  let ef = data[0].close, es = data[0].close;
+  const raw = data.map(d => {
+    ef = d.close * K(fast) + ef * (1 - K(fast));
+    es = d.close * K(slow) + es * (1 - K(slow));
+    return { time: d.time, m: ef - es };
+  });
+  let sigEMA = raw[0].m;
+  const sigArr = raw.map(r => { sigEMA = r.m * K(sigLen) + sigEMA * (1 - K(sigLen)); return sigEMA; });
+  return {
+    macd:   raw.map(r    => ({ time: r.time, value: +r.m.toFixed(4) })),
+    signal: raw.map((r,i)=> ({ time: r.time, value: +sigArr[i].toFixed(4) })),
+    hist:   raw.map((r,i)=> ({ time: r.time, value: +(r.m - sigArr[i]).toFixed(4),
+                               color: r.m >= sigArr[i] ? 'rgba(74,124,89,0.7)' : 'rgba(124,74,74,0.7)' })),
+  };
+}
+
+function calcATR(data, period = 14) {
+  if (data.length < 2) return [];
+  let atr = data[1].high - data[1].low;
+  const result = [];
+  for (let i = 1; i < data.length; i++) {
+    const tr = Math.max(data[i].high - data[i].low,
+                        Math.abs(data[i].high - data[i - 1].close),
+                        Math.abs(data[i].low  - data[i - 1].close));
+    atr = (atr * (period - 1) + tr) / period;
+    if (i >= period) result.push({ time: data[i].time, value: +atr.toFixed(4) });
+  }
+  return result;
+}
+
+// ── Dynamic margin layout ───────────────────────────
+// Panels stack from bottom: Volume → (sub-panels: ATR, RSI, MACD from bottom up) → Candles
+
+function recalcMargins() {
+  if (!lwChart) return;
+  const SUB = ['ATR', 'RSI', 'MACD'].filter(i => activeInds.has(i));
+  const hasVol = activeInds.has('Volume');
+  const volH  = hasVol ? 0.13 : 0;
+  const subH  = 0.20;
+
+  // Main candle scale bottom
+  const candleBottom = volH + SUB.length * subH + 0.02;
+  try { lwChart.priceScale('right').applyOptions({ scaleMargins: { top: 0.04, bottom: Math.min(candleBottom, 0.76) } }); } catch(e) {}
+
+  // Volume strip at the very bottom
+  if (indSeries['Volume']) {
+    const s = Array.isArray(indSeries['Volume']) ? indSeries['Volume'][0] : indSeries['Volume'];
+    try { s.priceScale().applyOptions({ scaleMargins: { top: 1 - volH, bottom: 0 } }); } catch(e) {}
+  }
+
+  // Sub-panels stacked above volume
+  SUB.forEach((ind, idx) => {
+    const bottom = volH + idx * subH;
+    const top    = 1 - volH - (idx + 1) * subH;
+    const series = Array.isArray(indSeries[ind]) ? indSeries[ind][0] : indSeries[ind];
+    if (series) try { series.priceScale().applyOptions({ scaleMargins: { top, bottom } }); } catch(e) {}
+  });
+}
+
+// ── Apply one indicator ─────────────────────────────
+
+function applyIndicator(name) {
+  if (!lwChart || !chartData.length) return;
+  const LINE = (color, opts = {}) => lwChart.addLineSeries({
+    color, lineWidth: 1, priceScaleId: 'right',
+    crosshairMarkerVisible: false, lastValueVisible: false, priceLineVisible: false,
+    ...opts,
+  });
+
+  switch (name) {
+    case 'EMA': {
+      const s20 = LINE('#c8a96e');
+      const s50 = LINE('rgba(200,169,110,0.4)');
+      s20.setData(calcEMA(chartData, 20));
+      s50.setData(calcEMA(chartData, 50));
+      indSeries['EMA'] = [s20, s50];
+      break;
+    }
+    case 'BB': {
+      const bb  = calcBB(chartData);
+      const sU  = LINE('rgba(200,169,110,0.55)');
+      const sM  = LINE('rgba(200,169,110,0.28)', { lineStyle: LightweightCharts.LineStyle.Dashed });
+      const sL  = LINE('rgba(200,169,110,0.55)');
+      sU.setData(bb.upper); sM.setData(bb.middle); sL.setData(bb.lower);
+      indSeries['BB'] = [sU, sM, sL];
+      break;
+    }
+    case 'RSI': {
+      const rsiData = calcRSI(chartData);
+      if (!rsiData.length) break;
+      const s = lwChart.addLineSeries({ color: '#c8a96e', lineWidth: 1, priceScaleId: 'rsi',
+        crosshairMarkerVisible: false, lastValueVisible: true, priceLineVisible: false });
+      s.setData(rsiData);
+      // Overbought / oversold dashed lines
+      const obData = rsiData.map(d => ({ time: d.time, value: 70 }));
+      const osData = rsiData.map(d => ({ time: d.time, value: 30 }));
+      const ob = lwChart.addLineSeries({ color:'rgba(124,74,74,0.4)',  lineWidth:1, lineStyle:LightweightCharts.LineStyle.Dashed, priceScaleId:'rsi', crosshairMarkerVisible:false, lastValueVisible:false, priceLineVisible:false });
+      const os = lwChart.addLineSeries({ color:'rgba(74,124,89,0.4)',  lineWidth:1, lineStyle:LightweightCharts.LineStyle.Dashed, priceScaleId:'rsi', crosshairMarkerVisible:false, lastValueVisible:false, priceLineVisible:false });
+      ob.setData(obData); os.setData(osData);
+      indSeries['RSI'] = [s, ob, os];
+      recalcMargins();
+      break;
+    }
+    case 'MACD': {
+      const macd = calcMACD(chartData);
+      const mL = lwChart.addLineSeries({ color:'#c8a96e', lineWidth:1, priceScaleId:'macd', crosshairMarkerVisible:false, lastValueVisible:false, priceLineVisible:false });
+      const sL = lwChart.addLineSeries({ color:'rgba(200,169,110,0.4)', lineWidth:1, priceScaleId:'macd', crosshairMarkerVisible:false, lastValueVisible:false, priceLineVisible:false });
+      const hist = lwChart.addHistogramSeries({ priceScaleId:'macd', lastValueVisible:false, priceLineVisible:false });
+      mL.setData(macd.macd); sL.setData(macd.signal); hist.setData(macd.hist);
+      indSeries['MACD'] = [mL, sL, hist];
+      recalcMargins();
+      break;
+    }
+    case 'ATR': {
+      const atrData = calcATR(chartData);
+      if (!atrData.length) break;
+      const s = lwChart.addLineSeries({ color:'rgba(200,169,110,0.8)', lineWidth:1, priceScaleId:'atr',
+        crosshairMarkerVisible:false, lastValueVisible:true, priceLineVisible:false });
+      s.setData(atrData);
+      indSeries['ATR'] = s;
+      recalcMargins();
+      break;
+    }
+    case 'Volume': {
+      if (!chartVolData.length) break;
+      const s = lwChart.addHistogramSeries({ priceScaleId:'vol', priceFormat:{type:'volume'}, lastValueVisible:false, priceLineVisible:false });
+      s.setData(chartVolData);
+      indSeries['Volume'] = s;
+      recalcMargins();
+      break;
+    }
+  }
+}
+
+function removeIndicator(name) {
+  const series = indSeries[name];
+  if (!series || !lwChart) return;
+  (Array.isArray(series) ? series : [series]).forEach(s => { try { lwChart.removeSeries(s); } catch(e){} });
+  delete indSeries[name];
+  recalcMargins();
+}
+
+function applyAllActiveIndicators() {
+  activeInds.forEach(name => applyIndicator(name));
+}
+
+function resetChartView() {
+  if (lwChart) lwChart.timeScale().fitContent();
+}
+
+function toggleChip(chip) {
+  if (chip.classList.contains('locked')) return;
+  const name = chip.textContent.trim();
+  chip.classList.toggle('active');
+  if (activeInds.has(name)) {
+    activeInds.delete(name);
+    removeIndicator(name);
+  } else {
+    activeInds.add(name);
+    applyIndicator(name);
+  }
+}
+
+function showCustomLocked() {
+  openPaymentPanel();
+}
+
+// ────────────────────────────────────────────────────
+// SEARCH
+// ────────────────────────────────────────────────────
+
+function getAllInstruments() {
+  const all = [];
+  function addItems(items, category) {
+    (items || []).forEach(inst => all.push({ ...inst, category }));
+  }
+  Object.entries(INSTRUMENTS).forEach(([key, cat]) => {
+    if (cat.subcats) {
+      Object.entries(cat.subcats).forEach(([, sub]) => addItems(sub.items, cat.label));
+    } else {
+      addItems(cat.items, cat.label);
+    }
+  });
+  return all;
+}
+
+function handleSearch(q) {
+  const results = document.getElementById('search-results');
+  if (!q.trim()) { results.classList.remove('visible'); return; }
+  const query = q.toLowerCase();
+  const all = getAllInstruments();
+  const matches = all.filter(i =>
+    i.name.toLowerCase().includes(query) || i.t.toLowerCase().includes(query)
+  ).slice(0, 8);
+
+  if (!matches.length) {
+    results.innerHTML = '<div style="padding:12px 16px;font-size:11px;color:var(--text-muted);">No instruments found.</div>';
+  } else {
+    results.innerHTML = matches.map(m => `
+      <div class="search-result-item"
+           onclick="selectBySearch('${m.tv}','${m.name}','${m.t}','${m.ex}','${m.price}','${m.ch}','${m.d}')">
+        <div>
+          <div class="sr-name">${m.name}</div>
+          <div class="sr-ticker">${m.t}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;font-family:var(--font-mono);color:${m.d==='up'?'var(--success)':'var(--danger)'};">${m.ch}</span>
+          <span class="sr-cat">${m.category}</span>
+        </div>
+      </div>`).join('');
+  }
+  results.classList.add('visible');
+}
+
+function selectBySearch(tv, name, ticker, ex, price, ch, dir) {
+  document.getElementById('sidebar-search').value = '';
+  document.getElementById('search-results').classList.remove('visible');
+
+  document.getElementById('info-name').textContent = name;
+  document.getElementById('info-ticker').textContent = tv;
+  document.getElementById('info-exchange').textContent = ex;
+  setInfoPrice(price);
+  const chBadge = document.getElementById('info-change');
+  chBadge.textContent = (dir === 'up' ? '▲ ' : '▼ ') + ch;
+  chBadge.className = `change-badge ${dir}`;
+  currentSymbol = tv;
+  loadChart(tv, currentInterval);
+  loadNews(tv);
+}
+
+// Close search on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.sidebar-search')) {
+    document.getElementById('search-results').classList.remove('visible');
+  }
+});
+
+// ────────────────────────────────────────────────────
+// PAYMENT PANEL
+// ────────────────────────────────────────────────────
+
+function openPaymentPanel() {
+  document.getElementById('payment-panel').classList.add('open');
+  document.getElementById('payment-overlay').classList.add('visible');
+}
+
+function closePaymentPanel() {
+  document.getElementById('payment-panel').classList.remove('open');
+  document.getElementById('payment-overlay').classList.remove('visible');
+}
+
+// ── Razorpay Key ID — replace with your live key when going live ──
+// Get your key from: razorpay.com → Settings → API Keys → Generate Test Key
+const RZP_KEY_ID = 'rzp_test_SbjONMnUBTQl81';
+
+async function handlePayment() {
+  if (!apexUser) { window.location.href = 'auth.html'; return; }
+
+  const payBtn = document.querySelector('.pay-btn');
+  if (payBtn) { payBtn.disabled = true; payBtn.textContent = 'Opening checkout…'; }
+
+  // Log payment intent in Supabase
+  const { data: payRecord } = await sb
+    .from('payments')
+    .insert({ user_id: apexUser.id, amount_paise: 5000, plan: 'pro', weeks: 1, status: 'created' })
+    .select()
+    .single();
+
+  const options = {
+    key: RZP_KEY_ID,
+    amount: 5000,          // ₹50 in paise
+    currency: 'INR',
+    name: 'APEX Analytics',
+    description: 'Pro Plan — 1 Week',
+    image: '',             // add your logo URL here
+    prefill: {
+      email: apexUser.email,
+    },
+    theme: { color: '#c8a96e' },
+
+    handler: async function(response) {
+      // Payment successful — activate pro in Supabase
+      if (payRecord?.id) {
+        await sb.from('payments').update({
+          razorpay_payment_id: response.razorpay_payment_id,
+          status: 'paid'
+        }).eq('id', payRecord.id);
+      }
+
+      // Activate pro plan for 1 week
+      await sb.rpc('activate_pro', { weeks_count: 1 });
+
+      // Refresh local profile
+      apexPlan = 'pro';
+      await loadProfile();
+      closePaymentPanel();
+
+      // Show success toast
+      showToast('🎉 Pro unlocked! Full access activated for 7 days.');
+    },
+
+    modal: {
+      ondismiss: function() {
+        if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'Pay ₹50 with Razorpay →'; }
+        if (payRecord?.id) {
+          sb.from('payments').update({ status: 'failed' }).eq('id', payRecord.id);
+        }
+      }
+    }
+  };
+
+  try {
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', async (resp) => {
+      if (payRecord?.id) {
+        await sb.from('payments').update({ status: 'failed' }).eq('id', payRecord.id);
+      }
+      showToast('Payment failed. Please try again.', 'error');
+      if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'Pay ₹50 with Razorpay →'; }
+    });
+    rzp.open();
+  } catch(e) {
+    showToast('Could not open Razorpay. Check your key ID.', 'error');
+    if (payBtn) { payBtn.disabled = false; payBtn.textContent = 'Pay ₹50 with Razorpay →'; }
+  }
+}
+
+// ── Toast notification ──
+function showToast(msg, type = 'success') {
+  let toast = document.getElementById('apex-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'apex-toast';
+    toast.style.cssText = `
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+      background:var(--surface); border:1px solid var(--border);
+      color:var(--text-primary); font-size:13px; font-weight:300;
+      padding:10px 20px; border-radius:var(--radius); z-index:9999;
+      transition:opacity 300ms ease; pointer-events:none;
+      font-family:var(--font); white-space:nowrap;
+    `;
+    document.body.appendChild(toast);
+  }
+  if (type === 'error') toast.style.borderColor = 'rgba(124,74,74,0.5)';
+  else toast.style.borderColor = 'rgba(200,169,110,0.35)';
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3500);
+}
+
+// ────────────────────────────────────────────────────
+// LIVE PRICE ENGINE
+// ────────────────────────────────────────────────────
+
+const CRYPTO_ID_MAP = {
+  'BTC':'bitcoin','ETH':'ethereum','BNB':'binancecoin','SOL':'solana',
+  'XRP':'ripple','ADA':'cardano','AVAX':'avalanche-2','DOGE':'dogecoin',
+  'DOT':'polkadot','MATIC':'matic-network','LINK':'chainlink','UNI':'uniswap',
+  'LTC':'litecoin','BCH':'bitcoin-cash','ATOM':'cosmos','FIL':'filecoin',
+  'TRX':'tron','SHIB':'shiba-inu','ALGO':'algorand','ICP':'internet-computer',
+  'VET':'vechain','HBAR':'hedera-hashgraph','NEAR':'near','APT':'aptos',
+  'ARB':'arbitrum','OP':'optimism','INJ':'injective-protocol','SUI':'sui',
+  'FTM':'fantom','SAND':'the-sandbox','MANA':'decentraland','AXS':'axie-infinity',
+};
+
+// Forex rates (refreshed every 60s)
+let usdInrRate = 84.5;
+let eurInrRate = 91.0;
+let gbpInrRate = 106.5;
+let jpyInrRate = 0.56;
+let priceRefreshTimer = null;
+let newsRefreshTimer  = null;
+
+// ── CORS proxy chain — tries each until one works ──
+const PROXY_LIST = [
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  (url) => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+let workingProxyIdx = 0; // starts with corsproxy.io
+
+async function fetchWithProxy(url) {
+  // Try from last known working proxy, then cycle
+  for (let attempt = 0; attempt < PROXY_LIST.length; attempt++) {
+    const idx = (workingProxyIdx + attempt) % PROXY_LIST.length;
+    try {
+      const ac = new AbortController();
+      const tid = setTimeout(() => ac.abort(), 6000);
+      const r = await fetch(PROXY_LIST[idx](url), { cache: 'no-store', signal: ac.signal });
+      clearTimeout(tid);
+      if (!r.ok) continue;
+      const text = await r.text();
+      // allorigins wraps in { contents: "..." }
+      let parsed;
+      try { parsed = JSON.parse(text); } catch(e) { continue; }
+      if (parsed.contents) parsed = JSON.parse(parsed.contents);
+      workingProxyIdx = idx; // remember what worked
+      return parsed;
+    } catch(e) { continue; }
+  }
+  return null;
+}
+
+async function yfFetch(symbols) {
+  if (!symbols.length) return [];
+  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols.join(',')}`;
+  try {
+    const data = await fetchWithProxy(url);
+    return data?.quoteResponse?.result || [];
+  } catch(e) { return []; }
+}
+
+// ── Binance API — direct CORS, no proxy needed ──
+// Used for all crypto. Much faster + more reliable than CoinGecko.
+async function binanceFetch(tickers) {
+  const pairs = tickers
+    .map(t => t + 'USDT')
+    .filter(p => !p.includes('USDT USDT')); // skip malformed
+  if (!pairs.length) return {};
+  const symbolsParam = JSON.stringify(pairs);
+  const url = `https://api.binance.com/api/v3/ticker/24hr?symbols=${encodeURIComponent(symbolsParam)}`;
+  try {
+    const r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) return {};
+    const data = await r.json();
+    const result = {};
+    (Array.isArray(data) ? data : []).forEach(item => {
+      const ticker = item.symbol.replace('USDT', '');
+      result[ticker] = { usd: parseFloat(item.lastPrice), usd_24h_change: parseFloat(item.priceChangePercent) };
+    });
+    return result;
+  } catch(e) { return {}; }
+}
+
+// ── CoinGecko fallback for coins not on Binance ──
+async function cgFetch(tickers) {
+  const ids = tickers.map(t => CRYPTO_ID_MAP[t]).filter(Boolean);
+  if (!ids.length) return {};
+  const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(',')}&vs_currencies=usd&include_24hr_change=true&precision=2`;
+  try {
+    const r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) return {};
+    return await r.json();
+  } catch(e) { return {}; }
+}
+
+async function refreshForexRates() {
+  // Try open.er-api.com first (no proxy needed)
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+    if (r.ok) {
+      const d = await r.json();
+      if (d.rates) {
+        usdInrRate = d.rates.INR || usdInrRate;
+        eurInrRate = (d.rates.INR / d.rates.EUR) || eurInrRate;
+        gbpInrRate = (d.rates.INR / d.rates.GBP) || gbpInrRate;
+        jpyInrRate = (d.rates.INR / d.rates.JPY) || jpyInrRate;
+        return;
+      }
+    }
+  } catch(e) {}
+  // Fallback: Yahoo Finance via proxy
+  const results = await yfFetch(['USDINR=X','EURINR=X','GBPINR=X','JPYINR=X']);
+  results.forEach(q => {
+    const p = q.regularMarketPrice;
+    if (!p) return;
+    if (q.symbol === 'USDINR=X') usdInrRate = p;
+    if (q.symbol === 'EURINR=X') eurInrRate = p;
+    if (q.symbol === 'GBPINR=X') gbpInrRate = p;
+    if (q.symbol === 'JPYINR=X') jpyInrRate = p;
+  });
+}
+
+function fmtPrice(price, ex, isCrypto) {
+  if (isCrypto) {
+    if (price >= 10000) return '$' + price.toLocaleString('en-US', {maximumFractionDigits:0});
+    if (price >= 1)     return '$' + price.toFixed(2);
+    return '$' + price.toFixed(4);
+  }
+  if (ex === 'NSE' || ex === 'BSE') {
+    return '₹' + price.toLocaleString('en-IN', {maximumFractionDigits:2});
+  }
+  if (ex === 'FX') {
+    if (price > 10) return price.toFixed(2);
+    return price.toFixed(4);
+  }
+  // USD-denominated (US stocks, commodities, indices, ADRs)
+  if (price >= 10000) return '$' + price.toLocaleString('en-US', {maximumFractionDigits:0});
+  if (price >= 1)     return '$' + price.toFixed(2);
+  return '$' + price.toFixed(4);
+}
+
+function applyPriceToRow(row, price, changePct) {
+  const ex = row.dataset.ex;
+  const isCrypto = (ex === 'CRYPTO');
+  const priceStr  = fmtPrice(price, ex, isCrypto);
+  const sign      = changePct >= 0 ? '+' : '';
+  const changeStr = sign + changePct.toFixed(2) + '%';
+  const dir       = changePct >= 0 ? 'up' : 'down';
+
+  row.dataset.price  = priceStr;
+  row.dataset.change = changeStr;
+  row.dataset.dir    = dir;
+
+  const priceDisp = row.querySelector('.inst-price-disp');
+  if (priceDisp) priceDisp.textContent = priceStr;
+
+  const changeEl = row.querySelector('.inst-change');
+  if (changeEl) {
+    changeEl.textContent = changeStr;
+    changeEl.className = `inst-change ${dir}`;
+  }
+
+  // Set CSS tooltip attribute on the row
+  setRowInr(row, priceStr);
+
+  // Update info panel if this row is currently selected
+  if (row.classList.contains('active')) {
+    setInfoPrice(priceStr);
+    const badge = document.getElementById('info-change');
+    badge.textContent = (dir === 'up' ? '▲ ' : '▼ ') + changeStr;
+    badge.className = `change-badge ${dir}`;
+  }
+}
+
+async function refreshPrices() {
+  const rows = Array.from(document.querySelectorAll('.inst-row'));
+  const cryptoRows = rows.filter(r => r.dataset.ex === 'CRYPTO');
+  const stockRows  = rows.filter(r => r.dataset.ex !== 'CRYPTO');
+
+  // Build Yahoo Finance symbol list (deduplicated)
+  const yfSymbols = [...new Set(stockRows.map(r => {
+    const ex = r.dataset.ex, t = r.dataset.ticker;
+    if (ex === 'NSE') return t + '.NS';
+    if (ex === 'BSE') return t + '.BO';
+    return t;
+  }))];
+
+  const cryptoTickers = [...new Set(cryptoRows.map(r => r.dataset.ticker))];
+
+  // Parallel fetch — Binance for crypto, Yahoo Finance (via proxy) for everything else
+  const [yfRes, bnRes] = await Promise.allSettled([
+    yfFetch(yfSymbols),
+    binanceFetch(cryptoTickers)
+  ]);
+
+  // Apply Yahoo Finance
+  const yfData   = yfRes.status === 'fulfilled' ? yfRes.value : [];
+  const yfBySym  = {};
+  yfData.forEach(q => { yfBySym[q.symbol] = q; });
+
+  stockRows.forEach(row => {
+    const ex = row.dataset.ex, t = row.dataset.ticker;
+    const sym = (ex === 'NSE') ? t + '.NS' : (ex === 'BSE') ? t + '.BO' : t;
+    const q   = yfBySym[sym];
+    if (q && q.regularMarketPrice != null) {
+      applyPriceToRow(row, q.regularMarketPrice, q.regularMarketChangePercent || 0);
+    }
+  });
+
+  // Apply Binance (crypto) — falls back to CoinGecko if Binance didn't return a ticker
+  const bnData = bnRes.status === 'fulfilled' ? bnRes.value : {};
+  const cgNeeded = cryptoTickers.filter(t => !bnData[t]);
+  let cgData = {};
+  if (cgNeeded.length) cgData = await cgFetch(cgNeeded);
+
+  cryptoRows.forEach(row => {
+    const ticker = row.dataset.ticker;
+    const bn = bnData[ticker];
+    if (bn && bn.usd != null) {
+      applyPriceToRow(row, bn.usd, bn.usd_24h_change || 0);
+    } else {
+      const cgId = CRYPTO_ID_MAP[ticker];
+      const cg   = cgId ? cgData[cgId] : null;
+      if (cg && cg.usd != null) applyPriceToRow(row, cg.usd, cg.usd_24h_change || 0);
+    }
+  });
+
+  // Update LIVE badge
+  const now = new Date();
+  const ts  = now.toLocaleTimeString('en-IN', {hour12: false});
+  document.getElementById('live-ts').textContent = ts;
+  document.getElementById('live-badge').classList.add('active');
+}
+
+function startLivePrices() {
+  refreshForexRates();
+  refreshPrices();
+  priceRefreshTimer = setInterval(refreshPrices, 10000);
+  setInterval(refreshForexRates, 60000);
+}
+
+// ────────────────────────────────────────────────────
+// INR HOVER TOOLTIP
+// ────────────────────────────────────────────────────
+
+// Sets #info-price text AND the data-inr attribute for the CSS tooltip
+function setInfoPrice(text) {
+  const el = document.getElementById('info-price');
+  if (!el) return;
+  el.textContent = text;
+  const inrVal = parseToInr(text);
+  if (inrVal) {
+    el.setAttribute('data-inr', fmtInr(inrVal));
+  } else {
+    el.removeAttribute('data-inr');
+  }
+}
+
+// Sets data-inr on a sidebar row for the CSS tooltip
+function setRowInr(row, priceStr) {
+  const inrVal = parseToInr(priceStr);
+  if (inrVal) {
+    row.setAttribute('data-inr', fmtInr(inrVal));
+  } else {
+    row.removeAttribute('data-inr');
+  }
+}
+
+function parseToInr(text) {
+  if (!text) return null;
+  const cleaned = text.replace(/[,\s]/g, '');
+  if (cleaned.startsWith('₹')) return null; // Already INR
+  let num = NaN, rate = 1;
+  if (cleaned.startsWith('$'))  { num = parseFloat(cleaned.slice(1)); rate = usdInrRate; }
+  else if (cleaned.startsWith('€')) { num = parseFloat(cleaned.slice(1)); rate = eurInrRate; }
+  else if (cleaned.startsWith('£')) { num = parseFloat(cleaned.slice(1)); rate = gbpInrRate; }
+  else if (cleaned.startsWith('¥')) { num = parseFloat(cleaned.slice(1)); rate = jpyInrRate; }
+  if (isNaN(num) || num <= 0) return null;
+  return num * rate;
+}
+
+function fmtInr(val) {
+  if (val >= 10000000) return '₹' + (val/10000000).toFixed(2) + ' Cr';
+  if (val >= 100000)   return '₹' + (val/100000).toFixed(2) + ' L';
+  return '₹' + val.toLocaleString('en-IN', {maximumFractionDigits:2});
+}
+
+// INR tooltip is now CSS-native via data-inr attribute + ::after :hover pseudo-element.
+// No JS event listeners needed — see setInfoPrice() and setRowInr() helpers.
+
+// ────────────────────────────────────────────────────
+// LIVE NEWS ENGINE
+// ────────────────────────────────────────────────────
+
+const newsCache = {};
+const NEWS_TTL  = 5 * 60 * 1000; // 5 minutes
+
+function timeAgo(dateStr) {
+  const then = new Date(dateStr);
+  const diff = Date.now() - then.getTime();
+  if (isNaN(diff) || diff < 0) return '';
+  const mins = Math.floor(diff / 60000);
+  const hrs  = Math.floor(mins / 60);
+  const days = Math.floor(hrs  / 24);
+  if (mins < 1)  return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  if (hrs  < 24) return `${hrs}h ago`;
+  return `${days}d ago`;
+}
+
+// Map TradingView symbol → Yahoo Finance RSS search query
+function tvToNewsQuery(tvSymbol) {
+  const part = tvSymbol.split(':').pop().replace('USDT','');
+  const MAP = {
+    'RELIANCE':'Reliance Industries','TCS':'TCS stock','HDFCBANK':'HDFC Bank',
+    'INFY':'Infosys stock','ICICIBANK':'ICICI Bank','SBIN':'SBI Bank',
+    'WIPRO':'Wipro stock','BAJFINANCE':'Bajaj Finance','KOTAKBANK':'Kotak Mahindra Bank',
+    'AAPL':'Apple stock','MSFT':'Microsoft stock','NVDA':'NVIDIA stock',
+    'GOOGL':'Alphabet Google stock','AMZN':'Amazon stock','META':'Meta Platforms stock',
+    'TSLA':'Tesla stock','JPM':'JPMorgan stock',
+    'BTC':'Bitcoin crypto','ETH':'Ethereum crypto','SOL':'Solana crypto',
+    'BNB':'BNB Binance crypto','XRP':'XRP Ripple crypto','DOGE':'Dogecoin crypto',
+    'GC':'Gold commodity','CL':'Crude oil','NG':'Natural gas',
+    'NIFTY':'Nifty 50 index India','SENSEX':'Sensex BSE India',
+    'GSPC':'S&P 500','IXIC':'NASDAQ index','DJI':'Dow Jones index',
+  };
+  return MAP[part] || part;
+}
+
+async function fetchLiveNews(tvSymbol) {
+  // Check cache
+  const cached = newsCache[tvSymbol];
+  if (cached && Date.now() - cached.ts < NEWS_TTL) {
+    renderNewsList(cached.items);
+    return;
+  }
+
+  const list = document.getElementById('news-list');
+  list.innerHTML = '<div style="padding:10px 0;font-size:11px;color:var(--text-muted);text-align:center;">Fetching latest news…</div>';
+
+  const query  = tvToNewsQuery(tvSymbol);
+  const yfRss  = `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${encodeURIComponent(query)}&region=US&lang=en-US`;
+  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(yfRss)}&count=5`;
+
+  try {
+    const r    = await fetch(apiUrl, { cache: 'no-store' });
+    const data = await r.json();
+
+    if (data.status === 'ok' && data.items?.length) {
+      const items = data.items.map(item => ({
+        h: item.title, src: item.author || 'Yahoo Finance',
+        t: timeAgo(item.pubDate), url: item.link
+      }));
+      newsCache[tvSymbol] = { items, ts: Date.now() };
+      renderNewsList(items);
+    } else {
+      // Fallback: broad market news
+      const mktRss = 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC&region=US&lang=en-US';
+      const mktUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(mktRss)}&count=5`;
+      const r2     = await fetch(mktUrl, { cache: 'no-store' });
+      const d2     = await r2.json();
+      const items  = (d2.items || []).map(item => ({
+        h: item.title, src: item.author || 'Yahoo Finance',
+        t: timeAgo(item.pubDate), url: item.link
+      }));
+      newsCache[tvSymbol] = { items: items.length ? items : newsData.default, ts: Date.now() };
+      renderNewsList(newsCache[tvSymbol].items);
+    }
+  } catch(e) {
+    renderNewsList(newsData.default);
+  }
+}
+
+function renderNewsList(items) {
+  const list = document.getElementById('news-list');
+  if (!items || !items.length) {
+    list.innerHTML = '<div style="padding:10px 0;font-size:11px;color:var(--text-muted);">No recent news.</div>';
+    return;
+  }
+  list.innerHTML = items.map(n =>
+    `<div class="news-item"${n.url ? ` onclick="window.open('${n.url.replace(/'/g,"\\'")}','_blank')" style="cursor:pointer;"` : ''}>
+      <div class="news-headline">${n.h}</div>
+      <div class="news-meta">${n.src} · ${n.t}</div>
+    </div>`
+  ).join('');
+}
+
+function startNewsRefresh(tvSymbol) {
+  clearInterval(newsRefreshTimer);
+  fetchLiveNews(tvSymbol);
+  newsRefreshTimer = setInterval(() => fetchLiveNews(tvSymbol), 60000);
+}
+
+// ────────────────────────────────────────────────────
+// AI ANALYSIS (Claude API)
+// ────────────────────────────────────────────────────
+
+// Claude API is proxied through /api/analyze (server.js locally, Vercel function in production)
+const AI_ENDPOINT = '/api/analyze';
+
+async function runAIAnalysis() {
+  if (apexPlan !== 'pro') { openPaymentPanel(); return; }
+  if (!chartData || chartData.length < 20) {
+    showToast('Load a chart first, then run analysis.', 'error'); return;
+  }
+
+  // Switch to loading state
+  document.getElementById('ai-idle').style.display    = 'none';
+  document.getElementById('ai-result').style.display  = 'none';
+  document.getElementById('ai-loading').style.display = '';
+
+  // Build a compact price summary for Claude
+  const recent  = chartData.slice(-30);
+  const last    = recent[recent.length - 1];
+  const first   = recent[0];
+  const high    = Math.max(...recent.map(c => c.high)).toFixed(2);
+  const low     = Math.min(...recent.map(c => c.low)).toFixed(2);
+  const pctMove = (((last.close - first.close) / first.close) * 100).toFixed(2);
+  const ticker  = document.getElementById('info-ticker')?.textContent || currentSymbol;
+  const name    = document.getElementById('info-name')?.textContent   || ticker;
+  const price   = last.close;
+
+  // Last 10 candles as mini OHLC table
+  const candleRows = chartData.slice(-10).map(c =>
+    `${c.time} O:${c.open} H:${c.high} L:${c.low} C:${c.close}`
+  ).join('\n');
+
+  const prompt = `You are a quantitative trading analyst. Analyse this instrument and provide a structured signal.
+
+Instrument: ${name} (${ticker})
+Current price: ${price}
+30-period range: High ${high}, Low ${low}
+30-period move: ${pctMove}%
+
+Recent OHLC (last 10 candles):
+${candleRows}
+
+Respond ONLY with valid JSON in exactly this format, no markdown, no extra text:
+{
+  "signal": "BUY" | "SELL" | "HOLD",
+  "confidence": <integer 0-100>,
+  "regime": "Trending" | "Ranging" | "Volatile" | "Bearish",
+  "entry": <number>,
+  "stop_loss": <number>,
+  "take_profit": <number>,
+  "timeframe": "Short-term" | "Swing" | "Positional",
+  "summary": "<2 sentence plain-English rationale>"
+}`;
+
+  try {
+    const resp = await fetch(AI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!resp.ok) throw new Error(`API error ${resp.status}`);
+    const data = await resp.json();
+    let raw = data.content?.[0]?.text?.trim() || "";
+    raw = raw.replace(/^```(json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    const json = JSON.parse(raw);
+
+    // Render results
+    const badge = document.getElementById('ai-signal-badge');
+    badge.textContent  = json.signal;
+    badge.className    = `signal-badge ${json.signal.toLowerCase()}`;
+
+    const conf = Math.min(100, Math.max(0, json.confidence));
+    document.getElementById('ai-confidence').textContent = conf + '%';
+    document.getElementById('ai-conf-fill').style.width  = conf + '%';
+    document.getElementById('ai-regime').textContent     = json.regime;
+
+    const dot = document.getElementById('ai-regime-dot');
+    dot.style.background = json.regime === 'Trending' ? 'var(--success)' :
+                           json.regime === 'Bearish'  ? 'var(--danger)'  :
+                           json.regime === 'Volatile' ? '#c8a96e'        : '#888';
+
+    document.getElementById('ai-entry').textContent   = json.entry;
+    document.getElementById('ai-sl').textContent      = json.stop_loss;
+    document.getElementById('ai-tp').textContent      = json.take_profit;
+    document.getElementById('ai-tf').textContent      = json.timeframe;
+    document.getElementById('ai-summary').textContent = json.summary;
+
+    document.getElementById('ai-loading').style.display = 'none';
+    document.getElementById('ai-result').style.display  = '';
+
+  } catch(e) {
+    console.error('[APEX AI] Error:', e);
+    document.getElementById('ai-loading').style.display = 'none';
+    document.getElementById('ai-idle').style.display    = '';
+    const msg = e.message?.includes('401') ? 'Invalid API key.' :
+                e.message?.includes('403') ? 'API key not authorized for browser calls.' :
+                e.message?.includes('JSON')? 'Unexpected AI response. Try again.' :
+                e.message?.includes('Failed to fetch') ? 'Network error — check your internet connection.' :
+                `Analysis failed: ${e.message}`;
+    showToast(msg, 'error');
+  }
+}
+
+// Re-trigger idle state when a new instrument is selected
+const _origLoadChart = loadChart;
+loadChart = function(tvSymbol, tfKey) {
+  if (document.getElementById('ai-result')?.style.display !== 'none') {
+    document.getElementById('ai-result').style.display  = 'none';
+    document.getElementById('ai-loading').style.display = 'none';
+    document.getElementById('ai-idle').style.display    = '';
+  }
+  return _origLoadChart(tvSymbol, tfKey);
+};
+
+// ────────────────────────────────────────────────────
+// INIT
+// ────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // ── Auth guard — redirects to auth.html if no session ──
+  const authed = await initAuth();
+  if (!authed) return;
+
+  renderSidebar();
+
+  // Render payment panel sparkles — always overwrite (spans may contain literal template text)
+  document.querySelectorAll('.plan-features-pay li span').forEach(el => {
+    el.innerHTML = ICON['sparkles'];
+  });
+
+  loadChart('NSE:RELIANCE', 'D');
+
+  // Highlight first row and seed its INR tooltip
+  setTimeout(() => {
+    const firstRow = document.querySelector('.inst-row');
+    if (firstRow) {
+      firstRow.classList.add('active');
+      setInfoPrice(firstRow.dataset.price || '₹2,847');
+      setRowInr(firstRow, firstRow.dataset.price || '');
+    }
+  }, 100);
+
+  // Start live data (slight delay to let DOM settle)
+  setTimeout(() => {
+    startLivePrices();
+    startNewsRefresh('NSE:RELIANCE');
+  }, 500);
+});
+</script>
+</body>
+</html>

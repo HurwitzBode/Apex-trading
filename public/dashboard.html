@@ -1050,6 +1050,148 @@
     .sr-ticker { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
     .sr-cat { font-size: 9px; color: var(--text-muted); border: 1px solid var(--border); padding: 1px 5px; border-radius: 2px; letter-spacing: 0.04em; }
 
+    /* ─────────── DONATE BUTTON ─────────────── */
+    .donate-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(200,169,110,0.10);
+      border: 1px solid rgba(200,169,110,0.25);
+      border-radius: 4px;
+      color: var(--accent);
+      font-size: 10px;
+      font-family: var(--font-display);
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .donate-btn:hover {
+      background: rgba(200,169,110,0.18);
+      border-color: rgba(200,169,110,0.45);
+    }
+
+    /* ─────────── DONATE MODAL ─────────────── */
+    .donate-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .donate-backdrop.visible { opacity: 1; pointer-events: all; }
+
+    .donate-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -46%) scale(0.97);
+      width: 320px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 24px 22px;
+      z-index: 2001;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      text-align: center;
+    }
+    .donate-modal.visible {
+      opacity: 1;
+      pointer-events: all;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .donate-close {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+    }
+    .donate-close:hover { color: var(--text-primary); }
+    .donate-heart {
+      width: 44px; height: 44px;
+      background: rgba(200,169,110,0.10);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .donate-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .donate-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .donate-goals {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 18px;
+      text-align: left;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .donate-goal-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+      color: var(--text-secondary);
+    }
+    .donate-goal-item svg { color: var(--accent); flex-shrink: 0; }
+    .donate-qr-wrap {
+      background: #fff;
+      border-radius: 10px;
+      padding: 14px 14px 10px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .donate-qr-img {
+      width: 190px;
+      height: 190px;
+      object-fit: contain;
+      display: block;
+      border-radius: 4px;
+    }
+    .donate-qr-fallback {
+      width: 190px;
+      height: 190px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+    .donate-upi-label {
+      font-size: 9.5px;
+      color: #555;
+      margin-top: 8px;
+      letter-spacing: 0.03em;
+    }
+    .donate-footer {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
     /* ─────────── PAYMENT SLIDE-IN PANEL ─────────────── */
     .payment-panel {
       position: fixed;
@@ -1333,11 +1475,52 @@
       <span class="plan-badge" id="plan-badge">Free</span>
     </div>
 
+    <button onclick="openDonateModal()" class="donate-btn" title="Support APEX">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
+      Support
+    </button>
+
     <button onclick="signOut()" class="icon-btn" title="Sign out" style="background:none;border:none;cursor:pointer;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     </button>
   </div>
 </header>
+
+<!-- ───── DONATE MODAL ───── -->
+<div class="donate-backdrop" id="donate-backdrop" onclick="closeDonateModal()"></div>
+<div class="donate-modal" id="donate-modal">
+  <button class="donate-close" onclick="closeDonateModal()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="donate-heart">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
+  </div>
+  <div class="donate-title">Support APEX</div>
+  <div class="donate-sub">APEX is completely free. If it helps your trading, consider buying us a coffee — it directly funds AI credits, better charts, and new features.</div>
+  <div class="donate-goals">
+    <div class="donate-goal-item">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Real-time AI analysis costs
+    </div>
+    <div class="donate-goal-item">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Professional TradingView charts
+    </div>
+    <div class="donate-goal-item">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+      Apple Sign-In integration
+    </div>
+  </div>
+  <div class="donate-qr-wrap">
+    <img src="donate-qr.png" alt="PhonePe QR Code" class="donate-qr-img" onerror="this.style.display='none';document.getElementById('donate-qr-fallback').style.display='flex'"/>
+    <div id="donate-qr-fallback" class="donate-qr-fallback" style="display:none">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="5" y="5" width="3" height="3" fill="var(--text-muted)"/><rect x="16" y="5" width="3" height="3" fill="var(--text-muted)"/><rect x="5" y="16" width="3" height="3" fill="var(--text-muted)"/><line x1="14" y1="14" x2="14" y2="14" stroke-width="2"/><rect x="17" y="14" width="4" height="4"/><rect x="14" y="17" width="4" height="4"/></svg>
+      <span style="font-size:10px;color:var(--text-muted);margin-top:8px;">QR code loading…</span>
+    </div>
+    <div class="donate-upi-label">Scan with PhonePe / any UPI app</div>
+  </div>
+  <div class="donate-footer">Any amount helps. Thank you 🙏</div>
+</div>
 
 <!-- ───── LAYOUT ───── -->
 <div class="app-layout">
@@ -1383,7 +1566,7 @@
         <div class="chip" onclick="toggleChip(this)">BB</div>
         <div class="chip" onclick="toggleChip(this)">ATR</div>
         <div class="chip" onclick="toggleChip(this)">Volume</div>
-        <div class="chip locked" onclick="showCustomLocked()" title="Premium — Custom Indicator Studio">+ Custom</div>
+        <div class="chip" onclick="toggleChip(this)" title="Custom Indicator Studio">+ Custom</div>
       </div>
       <div class="tf-group">
         <button class="tf-btn" onclick="setTF(this,'1m')">1m</button>
@@ -1446,8 +1629,8 @@
       <div class="section-label" style="margin-bottom:10px;">AI Analysis</div>
       <div class="ai-card" id="ai-card">
 
-        <!-- ── LOCKED STATE (shown to free users) ── -->
-        <div class="ai-locked-overlay" id="ai-locked">
+        <!-- ── LOCKED STATE (disabled — all features free) ── -->
+        <div class="ai-locked-overlay" id="ai-locked" style="display:none">
           <div class="lock-circle">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
@@ -1551,9 +1734,27 @@
 <!-- External SDKs -->
 <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!-- Razorpay removed — payments disabled while platform is free -->
 
 <script>
+// ────────────────────────────────────────────────────
+// SECURITY HELPERS
+// ────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function safeUrl(url) {
+  try {
+    const u = new URL(url);
+    return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : '#';
+  } catch { return '#'; }
+}
+
 // ────────────────────────────────────────────────────
 // SUPABASE — AUTH + PROFILE
 // ────────────────────────────────────────────────────
@@ -1607,25 +1808,18 @@ function updateUserChip() {
   if (el) el.textContent = initials;
   if (emailEl) emailEl.textContent = email;
   if (badgeEl) {
-    badgeEl.textContent = apexPlan === 'pro' ? 'Pro' : 'Free';
-    badgeEl.className = apexPlan === 'pro' ? 'plan-badge pro' : 'plan-badge';
+    badgeEl.style.display = 'none'; // Plan badge hidden — all features free
   }
 }
 
-// ── Apply plan gating across the dashboard ──
+// ── Apply plan gating — ALL FEATURES FREE, no gating ──
 function applyPlanGating() {
-  const isPro = apexPlan === 'pro';
-
-  // AI analysis panel — show/hide locked overlay
+  // Everything is free — keep overlay hidden always
   const aiOverlay = document.getElementById('ai-locked');
-  if (aiOverlay) aiOverlay.style.display = isPro ? 'none' : '';
+  if (aiOverlay) aiOverlay.style.display = 'none';
 
-  // Custom indicator chip — lock for free users
-  const customChip = document.querySelector('.chip.locked');
-  if (customChip) customChip.style.opacity = isPro ? '1' : '0.5';
-
-  // Filter limit badge (free = max 3 watchlist adds, pro = unlimited)
-  window.maxWatchlistItems = isPro ? Infinity : 5;
+  // Unlimited watchlist for all users
+  window.maxWatchlistItems = Infinity;
 }
 
 // ── Sign out ──
@@ -2417,7 +2611,7 @@ function toggleChip(chip) {
 }
 
 function showCustomLocked() {
-  openPaymentPanel();
+  // Previously gated — now all features are free, this is no longer called
 }
 
 // ────────────────────────────────────────────────────
@@ -2493,6 +2687,19 @@ document.addEventListener('click', (e) => {
 // ────────────────────────────────────────────────────
 // PAYMENT PANEL
 // ────────────────────────────────────────────────────
+
+// ── Donate modal ──
+function openDonateModal() {
+  document.getElementById('donate-backdrop').classList.add('visible');
+  document.getElementById('donate-modal').classList.add('visible');
+}
+function closeDonateModal() {
+  document.getElementById('donate-backdrop').classList.remove('visible');
+  document.getElementById('donate-modal').classList.remove('visible');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDonateModal();
+});
 
 function openPaymentPanel() {
   document.getElementById('payment-panel').classList.add('open');
@@ -2985,9 +3192,9 @@ function renderNewsList(items) {
     return;
   }
   list.innerHTML = items.map(n =>
-    `<div class="news-item"${n.url ? ` onclick="window.open('${n.url.replace(/'/g,"\\'")}','_blank')" style="cursor:pointer;"` : ''}>
-      <div class="news-headline">${n.h}</div>
-      <div class="news-meta">${n.src} · ${n.t}</div>
+    `<div class="news-item"${n.url ? ` onclick="window.open('${escHtml(safeUrl(n.url))}','_blank','noopener,noreferrer')" style="cursor:pointer;"` : ''}>
+      <div class="news-headline">${escHtml(n.h)}</div>
+      <div class="news-meta">${escHtml(n.src)} · ${escHtml(n.t)}</div>
     </div>`
   ).join('');
 }
@@ -3006,7 +3213,6 @@ function startNewsRefresh(tvSymbol) {
 const AI_ENDPOINT = '/api/analyze';
 
 async function runAIAnalysis() {
-  if (apexPlan !== 'pro') { openPaymentPanel(); return; }
   if (!chartData || chartData.length < 20) {
     showToast('Load a chart first, then run analysis.', 'error'); return;
   }

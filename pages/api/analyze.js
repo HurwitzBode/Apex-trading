@@ -13,8 +13,26 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    const CLAUDE_KEY = process.env.CLAUDE_API_KEY ||
-      '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';
+    // Hard cap on messages array to prevent abuse
+    if (messages.length > 10) {
+      return res.status(400).json({ error: 'Too many messages' });
+    }
+
+    // Validate each message has role + content string (no injected system prompts)
+    for (const msg of messages) {
+      if (!msg.role || !['user', 'assistant'].includes(msg.role)) {
+        return res.status(400).json({ error: 'Invalid message role' });
+      }
+      if (typeof msg.content !== 'string' || msg.content.length > 8000) {
+        return res.status(400).json({ error: 'Invalid message content' });
+      }
+    }
+
+    const CLAUDE_KEY = process.env.CLAUDE_API_KEY;
+    if (!CLAUDE_KEY) {
+      console.error('[APEX AI] CLAUDE_API_KEY env var not set');
+      return res.status(500).json({ error: 'AI service not configured' });
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

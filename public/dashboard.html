@@ -3152,33 +3152,18 @@ async function fetchLiveNews(tvSymbol) {
   const list = document.getElementById('news-list');
   list.innerHTML = '<div style="padding:10px 0;font-size:11px;color:var(--text-muted);text-align:center;">Fetching latest news…</div>';
 
-  const query  = tvToNewsQuery(tvSymbol);
-  const yfRss  = `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${encodeURIComponent(query)}&region=US&lang=en-US`;
-  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(yfRss)}&count=5`;
+  const query = tvToNewsQuery(tvSymbol);
 
   try {
-    const r    = await fetch(apiUrl, { cache: 'no-store' });
+    // Route through our own Next.js API — no third-party limits, no CORS, no rate caps
+    const r    = await fetch(`/api/news?symbol=${encodeURIComponent(query)}`, { cache: 'no-store' });
     const data = await r.json();
 
-    if (data.status === 'ok' && data.items?.length) {
-      const items = data.items.map(item => ({
-        h: item.title, src: item.author || 'Yahoo Finance',
-        t: timeAgo(item.pubDate), url: item.link
-      }));
-      newsCache[tvSymbol] = { items, ts: Date.now() };
-      renderNewsList(items);
+    if (data.items && data.items.length) {
+      newsCache[tvSymbol] = { items: data.items, ts: Date.now() };
+      renderNewsList(data.items);
     } else {
-      // Fallback: broad market news
-      const mktRss = 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC&region=US&lang=en-US';
-      const mktUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(mktRss)}&count=5`;
-      const r2     = await fetch(mktUrl, { cache: 'no-store' });
-      const d2     = await r2.json();
-      const items  = (d2.items || []).map(item => ({
-        h: item.title, src: item.author || 'Yahoo Finance',
-        t: timeAgo(item.pubDate), url: item.link
-      }));
-      newsCache[tvSymbol] = { items: items.length ? items : newsData.default, ts: Date.now() };
-      renderNewsList(newsCache[tvSymbol].items);
+      renderNewsList(newsData.default);
     }
   } catch(e) {
     renderNewsList(newsData.default);

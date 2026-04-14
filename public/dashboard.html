@@ -123,30 +123,6 @@
       gap: 10px;
     }
 
-    .rate-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 10px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .rate-bar {
-      width: 48px;
-      height: 2px;
-      background: var(--border);
-      border-radius: 1px;
-      overflow: hidden;
-    }
-
-    .rate-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 1px;
-    }
 
     .user-chip {
       display: flex;
@@ -457,28 +433,6 @@
       font-size: 10px;
       color: var(--text-muted);
       line-height: 1.6;
-    }
-
-    .footer-rate-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-    }
-
-    .footer-rate-bar {
-      width: 60px;
-      height: 2px;
-      background: var(--border);
-      border-radius: 1px;
-      overflow: hidden;
-    }
-
-    .footer-rate-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 1px;
-      width: 24%; /* 12/50 used */
     }
 
     .footer-rate-text {
@@ -1473,10 +1427,6 @@
       <span class="live-ts" id="live-ts">--:--:--</span>
     </div>
 
-    <div class="rate-pill">
-      <span style="font-size:10px;">12 / 50 calls</span>
-      <div class="rate-bar"><div class="rate-fill" style="width:24%"></div></div>
-    </div>
 
     <div class="user-chip">
       <div class="user-avatar" id="user-avatar">A</div>
@@ -1523,8 +1473,14 @@
   <div class="donate-qr-wrap">
     <img src="donate-qr.png" alt="PhonePe QR Code" class="donate-qr-img" onerror="this.style.display='none';document.getElementById('donate-qr-fallback').style.display='flex'"/>
     <div id="donate-qr-fallback" class="donate-qr-fallback" style="display:none">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="5" y="5" width="3" height="3" fill="var(--text-muted)"/><rect x="16" y="5" width="3" height="3" fill="var(--text-muted)"/><rect x="5" y="16" width="3" height="3" fill="var(--text-muted)"/><line x1="14" y1="14" x2="14" y2="14" stroke-width="2"/><rect x="17" y="14" width="4" height="4"/><rect x="14" y="17" width="4" height="4"/></svg>
-      <span style="font-size:10px;color:var(--text-muted);margin-top:8px;">QR code loading…</span>
+      <!-- PhonePe branded placeholder -->
+      <div style="width:190px;height:190px;background:#1a1a2e;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px dashed rgba(255,255,255,0.15);">
+        <div style="width:52px;height:52px;background:#5f259f;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="white"><text y="28" font-size="26" font-family="Arial" font-weight="bold">₹</text></svg>
+        </div>
+        <div style="font-size:11px;color:#fff;font-weight:600;letter-spacing:0.05em;">PhonePe / UPI</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.5);text-align:center;padding:0 16px;line-height:1.5;">UPI ID coming soon —<br>any amount welcome</div>
+      </div>
     </div>
     <div class="donate-upi-label">Scan with PhonePe / any UPI app</div>
   </div>
@@ -1553,14 +1509,8 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-footer-label">
-        Daily calls<br>
-        <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);">12 of 50</span>
-      </div>
-      <div class="footer-rate-wrap">
-        <div class="footer-rate-bar">
-          <div class="footer-rate-fill"></div>
-        </div>
-        <div class="footer-rate-text">76% left</div>
+        APEX Analytics<br>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent);">All features free</span>
       </div>
     </div>
   </aside>
